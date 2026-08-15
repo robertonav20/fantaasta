@@ -1,0 +1,9 @@
+config.json
+*.backup.xlsx
+__pycache__/
+*.pyc
+.venv/
+
+# graphify-axet
+.graphify/
+.graphifyignore

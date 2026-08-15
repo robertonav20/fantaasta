@@ -1,0 +1,8 @@
+{
+  "source_url": "https://www.fantacalcio.it/api/v1/Excel/prices/21/1",
+  "cookie_env": "FANTACALCIO_COOKIE",
+  "target_file": "Quotazioni_Fantacalcio_Stagione_2026_27.xlsx",
+  "output_file": "Quotazioni_Fantacalcio_Stagione_2026_27.xlsx",
+  "timeout_seconds": 30,
+  "backup": false
+}
