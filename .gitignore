@@ -2,8 +2,7 @@ config.json
 *.backup.xlsx
 __pycache__/
 *.pyc
+venv/
 .venv/
 
-# graphify-axet
-.graphify/
-.graphifyignore
+.DS_Store

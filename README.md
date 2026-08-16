@@ -1,8 +1,31 @@
-# Fantacalcio Quotazioni Updater
+# Fantacalcio - Asta
 
-Aggiorna automaticamente il workbook `Quotazioni_Fantacalcio_Stagione_2026_27.xlsx` scaricando le quotazioni da Fantacalcio.
+Repository per aggiornare automaticamente le quotazioni Fantacalcio e pubblicare l'asta tramite GitHub Pages.
 
-Lo script modifica esclusivamente questi fogli:
+## Pagina pubblica
+
+GitHub Pages pubblica esclusivamente ed il sito è disponibile qui https://robertonav20.github.io/fantaasta/:
+
+- `index.html`
+- `players.json`
+
+Il workbook, gli script Python e i file di configurazione non vengono pubblicati nel sito.
+
+`index.html` contiene:
+
+- rosa vuota 3 portieri, 8 difensori, 8 centrocampisti, 6 attaccanti;
+- budget totale e budget per reparto;
+- fasce costo configurabili;
+- costo effettivo e crediti residui;
+- ricerca giocatori con squadra e FVM;
+- undo/redo;
+- salvataggio dell'asta in `localStorage` del browser.
+
+Il catalogo giocatori viene letto a runtime da `players.json`.
+
+## Aggiornamento dati
+
+`aggiorna_quotazioni.py` scarica l'Excel Fantacalcio e modifica esclusivamente:
 
 - `Tutti`
 - `Portieri`
@@ -11,63 +34,103 @@ Lo script modifica esclusivamente questi fogli:
 - `Attaccanti`
 - `Ceduti`
 
-Gli altri fogli del workbook non vengono aggiornati dallo script.
+Dopo l'aggiornamento genera `players.json` dai quattro fogli ruolo. I giocatori presenti solo in `Ceduti` non vengono proposti nella pagina.
 
-## File del repository
+Lo stesso workflow scarica anche gli Excel statistiche Fantacalcio usando lo stesso secret `FANTACALCIO_COOKIE` e li associa ai giocatori tramite `Id` Fantacalcio. Configurazione corrente:
 
-- `aggiorna_quotazioni.py`: download e aggiornamento Excel.
-- `config.github.json`: configurazione usata da GitHub Actions.
-- `requirements.txt`: dipendenze Python.
-- `Quotazioni_Fantacalcio_Stagione_2026_27.xlsx`: workbook versionato e aggiornato dal workflow.
-- `.github/workflows/update-quotazioni.yml`: esecuzione automatica giornaliera.
+- `2026/27`: statistiche stagione corrente, opzionali finché non sono disponibili;
+- `2025/26`: storico stagione precedente, usato come supporto all'asta.
 
-## Configurazione GitHub
+Se una fonte opzionale non è temporaneamente disponibile, gli ultimi dati già salvati in `players.json` vengono mantenuti.
 
-Il cookie Fantacalcio non deve essere salvato nel repository.
+### Dati aggiuntivi
 
-Nel repository GitHub aprire:
+Il workflow prova inoltre a integrare:
 
-`Settings` -> `Secrets and variables` -> `Actions` -> `New repository secret`
+- **Probabili formazioni Fantacalcio.it**: percentuale di titolarità e stato del giocatore (`Infortunato`, `In dubbio`, `Squalificato`, `Diffidato`). La fonte viene ignorata se l'ultimo aggiornamento ha più di 21 giorni, per evitare dati obsoleti.
+- **Understat**: minuti, partite, gol, assist, xG, xA, tiri, key pass, npxG, xGChain, xGBuildup e metriche calcolate xG/90, xA/90 e xG+xA/90.
+- **Guide Fantacalcio.it**: gerarchia rigoristi e calci da fermo, salvata con la stagione di riferimento per non confondere dati storici e correnti.
 
-Creare il secret:
+Il matching delle fonti esterne è conservativo: i dati vengono collegati solo quando il giocatore è identificato in modo univoco. I dati avanzati sono opzionali e non bloccano l'aggiornamento delle quotazioni.
 
-- Name: `FANTACALCIO_COOKIE`
-- Secret: il valore completo dell'header `Cookie` necessario per scaricare il file.
+## Secret GitHub
 
-Esempio di valore del secret:
+Creare in:
 
-```text
-cookie1=valore1; cookie2=valore2
-```
+`Settings -> Secrets and variables -> Actions -> New repository secret`
 
-## Esecuzione automatica
+il secret:
 
-Il workflow viene eseguito ogni giorno alle **06:17 Europe/Rome** e può essere avviato anche manualmente dalla pagina `Actions` del repository.
+`FANTACALCIO_COOKIE`
 
-Se il workbook non cambia, non viene creato alcun commit. Se cambia, GitHub Actions aggiorna e committa solo:
+Il valore deve essere il contenuto completo dell'header HTTP `Cookie`.
 
-`Quotazioni_Fantacalcio_Stagione_2026_27.xlsx`
+Non inserire il cookie in `config.github.json`, `index.html` o `players.json`.
+
+## GitHub Pages
+
+Repository pubblico se si usa GitHub Free.
+
+In:
+
+`Settings -> Pages -> Build and deployment -> Source`
+
+selezionare:
+
+`GitHub Actions`
+
+Workflow:
+
+- `.github/workflows/update-quotazioni.yml`: ogni giorno aggiorna Excel + `players.json`, committa le variazioni e pubblica GitHub Pages;
+- `.github/workflows/pages.yml`: pubblica Pages quando modifichi manualmente `index.html` o `players.json` su `main`.
+
+L'URL sarà normalmente:
+
+`https://USERNAME.github.io/NOME-REPOSITORY/`
 
 ## Esecuzione locale
 
-Creare un file `config.json` locale oppure usare `config.github.json`, quindi impostare il cookie come variabile d'ambiente.
-
-Linux/macOS:
+Configurazione dipendenze
 
 ```bash
-export FANTACALCIO_COOKIE='cookie1=valore1; cookie2=valore2'
+python -m venv venv
+source venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+Per aggiornare i dati:
+
+```bash
+export FANTACALCIO_COOKIE='fantacalcio.it=;'
 python -m pip install -r requirements.txt
 python aggiorna_quotazioni.py --config config.github.json
 ```
 
-PowerShell:
+Per provare la pagina localmente serve un server HTTP perché `index.html` carica `players.json` con `fetch`:
 
-```powershell
-$env:FANTACALCIO_COOKIE='cookie1=valore1; cookie2=valore2'
-python -m pip install -r requirements.txt
-python aggiorna_quotazioni.py --config config.github.json
+```bash
+python -m http.server 8000
 ```
 
-## Nota sul cookie
+Aprire quindi `http://localhost:8000/`.
 
-Se Fantacalcio invalida o fa scadere il cookie, il workflow fallisce con HTTP `401`/`403`. In quel caso aggiornare il repository secret `FANTACALCIO_COOKIE`.
+## Asta web
+
+La pagina `index.html`:
+
+- salva automaticamente la rosa e i budget nel `localStorage` del browser;
+- mostra i dettagli completi del giocatore tramite il pulsante info;
+- mostra nel modale le statistiche Fantacalcio disponibili, separate per stagione;
+- mostra disponibilità/titolarità dalle probabili formazioni quando il dato è recente;
+- mostra le metriche avanzate Understat (xG/xA e indicatori per 90 minuti) quando disponibili;
+- mostra gerarchie di rigori e calci da fermo Fantacalcio con indicazione della stagione;
+- mostra indicatori asta calcolati: costo vs stima e costo vs FVM;
+- esporta la rosa compilata in CSV con costo di acquisto;
+- legge il catalogo aggiornato da `players.json`.
+
+`players.json` viene rigenerato dal workflow a partire dai fogli Portieri, Difensori, Centrocampisti e Attaccanti e contiene tutte le colonne informative A:M del workbook, le statistiche Fantacalcio associate per `Id`, le metriche avanzate eventualmente collegate e i dati recenti di disponibilità/titolarità.
+
+### Understat: primo caricamento
+
+Il file `players.json` iniziale puo avere `advanced: {}`. I dati Understat vengono popolati dal workflow GitHub.
+Per la stagione 2025/26 il primo caricamento e obbligatorio: se la pagina lega non espone `playersData`, lo script prova automaticamente lo scraping HTML delle pagine delle singole squadre. Se anche il fallback fallisce, il workflow termina con errore invece di pubblicare silenziosamente un catalogo senza dati avanzati. Dopo il primo caricamento riuscito, eventuali errori temporanei mantengono gli ultimi dati Understat disponibili.
