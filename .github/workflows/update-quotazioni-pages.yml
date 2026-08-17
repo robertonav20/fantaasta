@@ -44,7 +44,7 @@ jobs:
       - name: Commit updated data
         shell: bash
         run: |
-          git add -- "Quotazioni_Fantacalcio_Stagione_2026_27.xlsx" "players.json"
+          git add -- "players.json"
 
           if git diff --cached --quiet; then
             echo "Nessuna variazione nei dati."
