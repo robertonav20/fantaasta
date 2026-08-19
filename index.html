@@ -1,5 +1,6 @@
 <!-- project-version: 2026-08-19-catalog-timestamp-merged-auction-v9.1 -->
 <!doctype html>
+<!-- PROJECT_VERSION: 2026-08-20-player-next-match-probability-v9.3 -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -21,7 +22,7 @@
 .player-filters label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
 .player-filters input,.player-filters select{width:100%;min-width:0;text-transform:none}
 .player-results{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:8px}
-.player-results table{min-width:1180px}
+.player-results table{min-width:1320px}
 .player-results thead{position:sticky;top:0;background:var(--panel2);z-index:2}
 .player-results th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
 .player-results th.sortable:hover{color:var(--text)}
@@ -33,6 +34,10 @@
 .role-P{background:#facc15;color:#161616}.role-D{background:#86efac;color:#102015}.role-C{background:#38bdf8;color:#071b26}.role-A{background:#ef4444;color:#fff}
 .role-name{display:flex;align-items:center;gap:8px}.player-select-wrap{display:flex;align-items:center;gap:7px}.player-select-wrap .player-input{flex:1;min-width:185px}
 .health-badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;white-space:nowrap;border:1px solid var(--line)}
+.play-probability{display:inline-flex;align-items:center;justify-content:center;min-width:50px;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;white-space:nowrap;border:1px solid var(--line)}
+.play-probability.high{color:var(--ok);border-color:#2dd36f66;background:#2dd36f14}
+.play-probability.mid{color:#f6d365;border-color:#f6d36566;background:#f6d36514}
+.play-probability.low{color:var(--bad);border-color:#ff5b5b66;background:#ff5b5b14}
 .health-ok{color:var(--ok);border-color:#2dd36f66;background:#2dd36f14}.health-bad{color:var(--bad);border-color:#ff5b5b66;background:#ff5b5b14}.health-unknown{color:var(--muted)}
 .injury-return{display:block;max-width:230px;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.25;white-space:normal}.injury-description{grid-column:1/-1}
 
@@ -131,6 +136,7 @@
             <th class="sortable" data-player-sort="name">Nome <span class="sort-marker"></span></th>
             <th class="sortable" data-player-sort="team">Squadra <span class="sort-marker"></span></th>
             <th class="sortable center" data-player-sort="health">Stato <span class="sort-marker"></span></th>
+            <th class="sortable center" data-player-sort="playProbability">Prob. prossima partita <span class="sort-marker"></span></th>
             <th class="sortable num" data-player-sort="fvm">FVM <span class="sort-marker"></span></th>
             <th class="sortable num" data-player-sort="quote">Qt. A <span class="sort-marker"></span></th>
             <th class="sortable num" data-player-sort="diff">Diff. <span class="sort-marker"></span></th>
@@ -142,7 +148,7 @@
             <th class="sortable num" data-player-sort="assist">Assist <span class="sort-marker"></span></th>
             <th class="center">Info</th>
           </tr></thead>
-          <tbody id="playerTableBody"><tr><td colspan="14" class="muted">Caricamento giocatori...</td></tr></tbody>
+          <tbody id="playerTableBody"><tr><td colspan="15" class="muted">Caricamento giocatori...</td></tr></tbody>
         </table>
       </div>
     </section>
@@ -451,8 +457,10 @@ function catalogRows(){
     const info=p.info&&typeof p.info==='object'?p.info:{};
     const stats=latestSeasonData(p.stats);
     const injury=injuryData(p);
+    const availability=p.availability&&typeof p.availability==='object'?p.availability:{};
+    const playProbability=nullableNumber(availability.titolarita);
     return {
-      role,name:p.name||'',team:p.team||'',fvm:Number(p.fvm||0),player:p,injury,
+      role,name:p.name||'',team:p.team||'',fvm:Number(p.fvm||0),player:p,injury,availability,playProbability,
       health:injury.injured===true?'Infortunato':injury.injured===false?'Disponibile':'Non disponibile',
       quote:nullableNumber(infoValue(info,['Qt. A','Qt A','Quotazione attuale'])),
       diff:nullableNumber(infoValue(info,['Diff.','Diff'])),
@@ -499,13 +507,15 @@ function renderPlayerBrowser(){
   document.querySelectorAll('[data-player-sort]').forEach(th=>{
     const marker=th.querySelector('.sort-marker');if(marker)marker.textContent=th.dataset.playerSort===key?(dir===1?'▲':'▼'):'';
   });
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="14" class="muted">Nessun giocatore trovato.</td></tr>';return;}
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="15" class="muted">Nessun giocatore trovato.</td></tr>';return;}
   const showNum=value=>value===null||value===undefined?'—':displayValue(value);
+  const probabilityBadge=value=>{if(value===null||value===undefined)return '<span class="muted">—</span>';const n=Math.max(0,Math.min(100,Number(value)));const cls=n>=75?'high':n>=50?'mid':'low';return `<span class="play-probability ${cls}" title="Probabilità titolare nella prossima partita">${displayValue(n)}%</span>`};
   tbody.innerHTML=rows.map(row=>`<tr>
     <td class="center">${roleBadge(row.role)}</td>
     <td><b>${esc(row.name)}</b></td>
     <td>${esc(row.team||'—')}</td>
     <td class="center">${healthBadge(row.player)}${row.injury?.injured===true&&row.injury?.returnText?`<span class="injury-return" title="${esc(row.injury.description||row.injury.returnText)}">${esc(row.injury.returnText)}</span>`:''}</td>
+    <td class="center">${probabilityBadge(row.playProbability)}</td>
     <td class="num">${money(row.fvm)}</td>
     <td class="num">${showNum(row.quote)}</td>
     <td class="num">${showNum(row.diff)}</td>
