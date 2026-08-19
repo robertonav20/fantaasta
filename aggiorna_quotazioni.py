@@ -25,7 +25,7 @@ import shutil
 import sys
 import tempfile
 import unicodedata
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -33,7 +33,7 @@ import requests
 from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 
-SCRIPT_VERSION = "2026-08-16-json-only-v8.2"
+SCRIPT_VERSION = "2026-08-19-catalog-timestamp-v8.3"
 
 SHEETS_TO_UPDATE = (
     "Tutti",
@@ -1823,11 +1823,31 @@ def update_players_json(
         injury_by_id,
         injury_updated_at,
     )
-    payload = json.dumps(catalog, ensure_ascii=False, indent=2) + "\n"
-    current = json_file.read_text(encoding="utf-8") if json_file.exists() else None
-    changed = current != payload
+    current_text = json_file.read_text(encoding="utf-8") if json_file.exists() else None
+    current_catalog = None
+    if current_text:
+        try:
+            current_catalog = json.loads(current_text)
+        except json.JSONDecodeError:
+            current_catalog = None
+
+    # catalogUpdatedAt descrive l'ultimo cambiamento effettivo del catalogo.
+    # Viene escluso dal confronto per evitare commit inutili a ogni esecuzione.
+    current_for_compare = copy.deepcopy(current_catalog) if isinstance(current_catalog, dict) else None
+    if isinstance(current_for_compare, dict):
+        current_for_compare.setdefault("_meta", {}).pop("catalogUpdatedAt", None)
+    catalog_for_compare = copy.deepcopy(catalog)
+    catalog_for_compare.setdefault("_meta", {}).pop("catalogUpdatedAt", None)
+    has_catalog_timestamp = bool(
+        isinstance(current_catalog, dict)
+        and isinstance(current_catalog.get("_meta"), dict)
+        and current_catalog["_meta"].get("catalogUpdatedAt")
+    )
+    changed = current_for_compare != catalog_for_compare or not has_catalog_timestamp
 
     if changed:
+        catalog.setdefault("_meta", {})["catalogUpdatedAt"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        payload = json.dumps(catalog, ensure_ascii=False, indent=2) + "\n"
         json_file.parent.mkdir(parents=True, exist_ok=True)
         fd, temp_name = tempfile.mkstemp(
             prefix=f".{json_file.stem}_",
