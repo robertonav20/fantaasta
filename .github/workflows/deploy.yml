@@ -48,13 +48,9 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "22.22.3"
-          cache: npm
-          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        shell: bash
         run: |
-          set -euo pipefail
           if [ -f package-lock.json ]; then
             npm ci
           else
