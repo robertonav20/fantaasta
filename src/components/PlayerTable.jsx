@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
-  Box, Chip, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell,
+  Box, Chip, FormControl, IconButton, InputLabel, MenuItem, Paper, Popover, Select, Stack, Table, TableBody, TableCell,
   TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, TextField, Tooltip, Typography,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -17,16 +17,47 @@ function probabilityChip(value) {
   return <Chip size="small" color={color} label={`${Math.round(n)}%`} sx={{ minWidth: 52 }} />;
 }
 
-function injuryChip(injury) {
-  if (injury?.injured === true) {
-    return (
-      <Stack spacing={.25} alignItems="flex-start">
-        <Chip size="small" color="error" label="Infortunato" />
-        {injury.returnText && <Typography variant="caption" color="text.secondary">{injury.returnText}</Typography>}
-      </Stack>
-    );
+function InjuryStatusChip({ injury }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  if (injury?.injured !== true) {
+    return <Chip size="small" color="success" variant="outlined" label="Disponibile" />;
   }
-  return <Chip size="small" color="success" variant="outlined" label="Disponibile" />;
+
+  const cause = injury.description || injury.status || 'Dettaglio non disponibile';
+  const returnText = injury.returnText || 'Rientro non disponibile';
+  const details = (
+    <Box sx={{ maxWidth: 320 }}>
+      <Typography variant="caption" display="block"><b>Causa:</b> {cause}</Typography>
+      <Typography variant="caption" display="block" sx={{ mt: .25 }}><b>Rientro:</b> {returnText}</Typography>
+    </Box>
+  );
+
+  return (
+    <>
+      <Tooltip title={details} arrow enterTouchDelay={250}>
+        <Chip
+          size="small"
+          color="error"
+          label="Infortunato"
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+          sx={{ cursor: 'pointer' }}
+        />
+      </Tooltip>
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
+        <Box sx={{ p: 1.25, maxWidth: 340 }}>
+          <Typography variant="subtitle2" sx={{ mb: .5 }}>Infortunio</Typography>
+          {details}
+        </Box>
+      </Popover>
+    </>
+  );
 }
 
 function statFor(player, key) {
@@ -136,7 +167,7 @@ export default function PlayerTable({ catalog, meta }) {
                   <TableCell sx={{ fontWeight: 800 }}>{row.name}</TableCell>
                   <TableCell>{row.team}</TableCell>
                   <TableCell>{row.tacticalRole ? <Box><b>{row.tacticalRole}</b><Typography variant="caption" display="block" color="text.secondary">{row.formation || '—'}</Typography></Box> : '—'}</TableCell>
-                  <TableCell>{injuryChip(row.injury)}</TableCell>
+                  <TableCell><InjuryStatusChip injury={row.injury} /></TableCell>
                   <TableCell align="center">{probabilityChip(row.playProbability)}</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 800 }}>{money(row.fvm)}</TableCell>
                   <TableCell align="right">{number(row.quote)}</TableCell>
