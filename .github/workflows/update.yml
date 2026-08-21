@@ -11,7 +11,7 @@ on:
       - "scripts/**/*.py"
       - "config.github.json"
       - "requirements.txt"
-      - ".github/workflows/update-data.yml"
+      - ".github/workflows/update.yml"
 
 permissions:
   contents: write
@@ -78,6 +78,6 @@ jobs:
   deploy-updated-catalog:
     needs: update
     if: needs.update.outputs.changed == 'true'
-    uses: ./.github/workflows/deploy-pages.yml
+    uses: ./.github/workflows/deploy.yml
     with:
       ref: ${{ needs.update.outputs.ref }}
