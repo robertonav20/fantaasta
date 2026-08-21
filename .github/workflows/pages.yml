@@ -1,14 +1,25 @@
-name: Deploy GitHub Pages
+name: Build e deploy React UI
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "index.html"
-      - "players.json"
-      - ".github/workflows/pages.yml"
+  workflow_call:
+    inputs:
+      ref:
+        description: Commit/ref da pubblicare
+        required: false
+        type: string
+        default: ""
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.js"
+      - "scripts/validate-project.mjs"
+      - ".github/workflows/deploy-pages.yml"
 
 permissions:
   contents: read
@@ -20,31 +31,65 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - name: Checkout requested ref
+        if: ${{ inputs.ref != '' }}
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
 
-      - name: Prepare GitHub Pages site
+      - name: Checkout current commit
+        if: ${{ inputs.ref == '' }}
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22.22.3"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
         shell: bash
         run: |
-          mkdir -p _site
-          cp index.html players.json _site/
-          touch _site/.nojekyll
+          set -euo pipefail
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Validate React project
+        run: npm run validate
+
+      - name: Build React SPA
+        run: npm run build
+
+      - name: Verify static build
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f dist/index.html
+          test -f dist/players.json
+          test -d dist/assets
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload GitHub Pages artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: _site
+          path: dist
 
-      - name: Deploy to GitHub Pages
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
