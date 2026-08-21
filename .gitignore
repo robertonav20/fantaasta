@@ -2,6 +2,7 @@ config.json
 *.backup.xlsx
 __pycache__/
 *.pyc
+node_modules/
 venv/
 .venv/
 

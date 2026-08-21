@@ -1,45 +1,19 @@
 {
   "source_url": "https://www.fantacalcio.it/api/v1/Excel/prices/21/1",
   "cookie_env": "FANTACALCIO_COOKIE",
-  "players_file": "players.json",
+  "players_file": "public/players.json",
   "timeout_seconds": 30,
   "stats_sources": [
-    {
-      "season": "2026/27",
-      "url": "https://www.fantacalcio.it/api/v1/Excel/stats/21/1",
-      "required": false
-    },
-    {
-      "season": "2025/26",
-      "url": "https://www.fantacalcio.it/api/v1/Excel/stats/20/1",
-      "required": false
-    }
+    { "season": "2026/27", "url": "https://www.fantacalcio.it/api/v1/Excel/stats/21/1", "required": false },
+    { "season": "2025/26", "url": "https://www.fantacalcio.it/api/v1/Excel/stats/20/1", "required": false }
   ],
   "advanced_sources": [
-    {
-      "provider": "understat",
-      "season": "2026/27",
-      "url": "https://understat.com/league/Serie_A/2026"
-    },
-    {
-      "provider": "understat",
-      "season": "2025/26",
-      "url": "https://understat.com/league/Serie_A/2025"
-    }
+    { "provider": "understat", "season": "2026/27", "url": "https://understat.com/league/Serie_A/2026" },
+    { "provider": "understat", "season": "2025/26", "url": "https://understat.com/league/Serie_A/2025" }
   ],
   "set_pieces_sources": [
-    {
-      "season": "2026/27",
-      "url": "https://www.fantacalcio.it/news/calcio-italia/06_08_2026/asta-fantacalcio-le-probabili-formazioni-della-serie-a-enilive-2026-27-495558",
-      "required": false,
-      "use_cookie": false
-    },
-    {
-      "season": "2025/26",
-      "url": "https://www.fantacalcio.it/news/calcio-italia/29_07_2025/asta-fantacalcio-le-probabili-formazioni-della-serie-a-enilive-2025-26-480206",
-      "required": false,
-      "use_cookie": false
-    }
+    { "season": "2026/27", "url": "https://www.fantacalcio.it/news/calcio-italia/06_08_2026/asta-fantacalcio-le-probabili-formazioni-della-serie-a-enilive-2026-27-495558", "required": false, "use_cookie": false },
+    { "season": "2025/26", "url": "https://www.fantacalcio.it/news/calcio-italia/29_07_2025/asta-fantacalcio-le-probabili-formazioni-della-serie-a-enilive-2025-26-480206", "required": false, "use_cookie": false }
   ],
   "availability_source": {
     "url": "https://www.fantacalcio.it/probabili-formazioni-serie-a",

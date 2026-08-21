@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
-"""Aggiorna i fogli quotazioni Fantacalcio di un workbook esistente.
+"""Genera players.json per l'asta Fantacalcio.
 
-Fogli modificati esclusivamente:
-- Tutti
-- Portieri
-- Difensori
-- Centrocampisti
-- Attaccanti
-- Ceduti
-
-Il file sorgente viene scaricato dall'endpoint Fantacalcio usando un header Cookie
-configurabile. Tutti gli altri fogli del workbook destinazione restano invariati.
+Scarica temporaneamente il listone XLSX e le fonti opzionali configurate,
+normalizza i dati e aggiorna il catalogo JSON. Nessun workbook e' persistito
+nel repository. Le fonti opzionali non bloccano il workflow se falliscono.
 """
 
 from __future__ import annotations
@@ -33,7 +26,7 @@ import requests
 from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 
-SCRIPT_VERSION = "2026-08-19-catalog-timestamp-v8.3"
+SCRIPT_VERSION = "2026-08-21-react-public-json-v8.5"
 
 SHEETS_TO_UPDATE = (
     "Tutti",
@@ -1321,6 +1314,142 @@ STATUS_BOUNDARIES = {
 }
 
 
+
+def _formation_parts(value: str) -> list[int] | None:
+    """Estrae moduli standard tipo 4-3-3 / 3-4-2-1; totale giocatori di movimento = 10."""
+    match = re.search(r"(?<!\d)([1-5](?:\s*[-–]\s*[1-5]){2,3})(?!\d)", str(value or ""))
+    if not match:
+        return None
+    try:
+        parts = [int(x) for x in re.split(r"\s*[-–]\s*", match.group(1))]
+    except ValueError:
+        return None
+    return parts if sum(parts) == 10 and 3 <= len(parts) <= 4 else None
+
+
+def _formation_label(parts: list[int]) -> str:
+    return "-".join(str(x) for x in parts)
+
+
+def _line_position_labels(parts: list[int]) -> list[str]:
+    """Etichette posizionali da sinistra a destra per gli 11 titolari."""
+    labels = ["Portiere"]
+    for line_index, count in enumerate(parts):
+        is_first = line_index == 0
+        is_last = line_index == len(parts) - 1
+        is_penultimate_attack = len(parts) == 4 and line_index == len(parts) - 2
+        if is_first:
+            by_count = {
+                3: ["Braccetto sx", "Difensore centrale", "Braccetto dx"],
+                4: ["Terzino sx", "Centrale sx", "Centrale dx", "Terzino dx"],
+                5: ["Esterno sx", "Centrale sx", "Difensore centrale", "Centrale dx", "Esterno dx"],
+            }
+        elif is_last:
+            by_count = {
+                1: ["Punta centrale"],
+                2: ["Attaccante sx", "Attaccante dx"],
+                3: ["Ala sx", "Punta centrale", "Ala dx"],
+                4: ["Ala sx", "Punta sx", "Punta dx", "Ala dx"],
+            }
+        elif is_penultimate_attack:
+            by_count = {
+                1: ["Trequartista"],
+                2: ["Trequartista sx", "Trequartista dx"],
+                3: ["Ala sx", "Trequartista", "Ala dx"],
+                4: ["Esterno sx", "Trequartista sx", "Trequartista dx", "Esterno dx"],
+            }
+        else:
+            by_count = {
+                1: ["Centrocampista centrale"],
+                2: ["Mediano sx", "Mediano dx"],
+                3: ["Mezzala sx", "Centrocampista centrale", "Mezzala dx"],
+                4: ["Esterno sx", "Centrale sx", "Centrale dx", "Esterno dx"],
+                5: ["Quinto sx", "Mezzala sx", "Regista", "Mezzala dx", "Quinto dx"],
+            }
+        line_labels = by_count.get(count)
+        if not line_labels:
+            line_labels = [f"Linea {line_index + 1} · posizione {i + 1}" for i in range(count)]
+        labels.extend(line_labels)
+    return labels
+
+
+def _detect_team_from_token(token: str, known_teams: dict[str, str]) -> str | None:
+    key = _team_key(token)
+    if key in known_teams:
+        return known_teams[key]
+    # Intestazioni come "INTER - 3-5-2" o "Probabile formazione Milan".
+    norm_tokens = _name_tokens(token)
+    for team_key, canonical in known_teams.items():
+        team_tokens = team_key.split()
+        if team_tokens and all(t in norm_tokens for t in team_tokens) and len(norm_tokens) <= len(team_tokens) + 7:
+            return canonical
+    return None
+
+
+def _parse_tactical_positions(strings: list[str], identities: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Ricava modulo e posizione dai primi 11 nomi successivi al modulo della squadra.
+
+    E' intenzionalmente conservativo: assegna la posizione solo se trova 11 giocatori
+    univoci della stessa squadra e il primo e' un portiere.
+    """
+    known_teams = {_team_key(p.get("team")): str(p.get("team") or "") for p in identities if p.get("team")}
+    identity_by_id = {str(p["id"]): p for p in identities}
+    token_teams = [_detect_team_from_token(token, known_teams) for token in strings]
+    result: dict[str, dict[str, str]] = {}
+    current_team: str | None = None
+    active: dict[str, Any] | None = None
+
+    for i, token in enumerate(strings):
+        detected_team = token_teams[i]
+        if detected_team:
+            current_team = detected_team
+            if active and _team_key(active["team"]) != _team_key(current_team):
+                active = None
+
+        parts = _formation_parts(token)
+        if parts:
+            team = detected_team or current_team
+            if not team:
+                for j in range(i - 1, max(-1, i - 25), -1):
+                    if token_teams[j]:
+                        team = token_teams[j]
+                        break
+            if not team:
+                for j in range(i + 1, min(len(strings), i + 8)):
+                    if token_teams[j]:
+                        team = token_teams[j]
+                        break
+            if team:
+                current_team = team
+                active = {"team": team, "parts": parts, "players": []}
+            continue
+
+        if not active:
+            continue
+        player_id = match_player_id(token, identities, active["team"])
+        if not player_id or player_id in active["players"]:
+            continue
+        active["players"].append(player_id)
+        if len(active["players"]) < 11:
+            continue
+
+        players = active["players"][:11]
+        first = identity_by_id.get(players[0], {})
+        if first.get("role") != "P":
+            active = None
+            continue
+        labels = _line_position_labels(active["parts"])
+        if len(labels) != 11:
+            active = None
+            continue
+        formation = _formation_label(active["parts"])
+        for pid, label in zip(players, labels):
+            result[pid] = {"modulo": formation, "posizione": label}
+        active = None
+
+    return result
+
+
 def parse_fantacalcio_availability(
     html: str,
     identities: list[dict[str, Any]],
@@ -1384,6 +1513,10 @@ def parse_fantacalcio_availability(
         player_id = token_to_id.get(" ".join(_name_tokens(token)))
         if player_id:
             result.setdefault(player_id, {})["stato"] = current_status
+
+    tactical = _parse_tactical_positions(strings, identities)
+    for player_id, details in tactical.items():
+        result.setdefault(player_id, {}).update(details)
 
     source_updated = latest_dt.isoformat(timespec="minutes") if latest_dt else None
     for details in result.values():

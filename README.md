@@ -1,136 +1,156 @@
-# Fantacalcio - Asta
+# Fantacalcio Asta
 
-Repository per aggiornare automaticamente le quotazioni Fantacalcio e pubblicare l'asta tramite GitHub Pages.
+SPA React + Material UI per consultare il catalogo Fantacalcio e gestire più aste contemporaneamente.
 
-## Pagina pubblica
+## Struttura
 
-GitHub Pages pubblica esclusivamente ed il sito è disponibile qui https://robertonav20.github.io/fantaasta/:
+```text
+.
+├── public/
+│   ├── .nojekyll
+│   └── players.json
+├── src/
+│   ├── components/
+│   │   ├── AuctionPanel.jsx
+│   │   ├── AuctionSummary.jsx
+│   │   ├── AuctionTable.jsx
+│   │   ├── AuctionTabs.jsx
+│   │   ├── ConfigModal.jsx
+│   │   ├── HistoryModal.jsx
+│   │   ├── MainNavigation.jsx
+│   │   ├── PlayerModal.jsx
+│   │   ├── PlayerTable.jsx
+│   │   └── RoleBadge.jsx
+│   ├── constants/
+│   │   ├── auction.js
+│   │   ├── project.js
+│   │   ├── storage.js
+│   │   └── index.js
+│   ├── hooks/
+│   │   ├── useAuctionWorkspace.js
+│   │   ├── useCatalog.js
+│   │   └── useRosterHistory.js
+│   ├── pages/
+│   │   ├── AuctionsPage.jsx
+│   │   └── PlayersPage.jsx
+│   ├── services/
+│   │   ├── players.js
+│   │   └── storage.js
+│   ├── utils/
+│   │   ├── auction.js
+│   │   ├── budget.js
+│   │   ├── common.js
+│   │   ├── exportImport.js
+│   │   ├── playerUtils.js
+│   │   └── index.js
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── theme.js
+├── scripts/
+│   ├── aggiorna_quotazioni.py
+│   └── validate-project.mjs
+├── .github/workflows/
+│   ├── deploy-pages.yml
+│   └── update-data.yml
+├── config.github.json
+├── requirements.txt
+├── package.json
+└── vite.config.js
+```
 
-- `index.html`
-- `players.json`
+## Frontend
 
-Il workbook, gli script Python e i file di configurazione non vengono pubblicati nel sito.
+Requisito: Node.js 22.12+.
 
-`index.html` contiene:
+```bash
+npm install
+npm run dev
+```
 
-- rosa vuota 3 portieri, 8 difensori, 8 centrocampisti, 6 attaccanti;
-- budget totale e budget per reparto;
-- fasce costo configurabili;
-- costo effettivo e crediti residui;
-- ricerca giocatori con squadra e FVM;
-- undo/redo;
-- salvataggio dell'asta in `localStorage` del browser.
+Validazione struttura:
 
-Il catalogo giocatori viene letto a runtime da `players.json`.
+```bash
+npm run validate
+```
 
-## Aggiornamento dati
+Build statica:
 
-`aggiorna_quotazioni.py` scarica l'Excel Fantacalcio e modifica esclusivamente:
+```bash
+npm run build
+```
 
-- `Tutti`
-- `Portieri`
-- `Difensori`
-- `Centrocampisti`
-- `Attaccanti`
-- `Ceduti`
+La build viene prodotta in `dist/`. GitHub Pages pubblica solo questa directory.
 
-Dopo l'aggiornamento genera `players.json` dai quattro fogli ruolo. I giocatori presenti solo in `Ceduti` non vengono proposti nella pagina.
+## Dati
 
-Lo stesso workflow scarica anche gli Excel statistiche Fantacalcio usando lo stesso secret `FANTACALCIO_COOKIE` e li associa ai giocatori tramite `Id` Fantacalcio. Configurazione corrente:
+`public/players.json` è l'unico dataset persistente del frontend. Il listone XLSX remoto viene letto temporaneamente dallo script Python e non viene versionato.
 
-- `2026/27`: statistiche stagione corrente, opzionali finché non sono disponibili;
-- `2025/26`: storico stagione precedente, usato come supporto all'asta.
+Esecuzione locale:
 
-Se una fonte opzionale non è temporaneamente disponibile, gli ultimi dati già salvati in `players.json` vengono mantenuti.
+```bash
+python -m pip install -r requirements.txt
+export FANTACALCIO_COOKIE='cookie...'
+python scripts/aggiorna_quotazioni.py --config config.github.json
+```
 
-### Dati aggiuntivi
+Su Windows PowerShell:
 
-Il workflow prova inoltre a integrare:
+```powershell
+$env:FANTACALCIO_COOKIE='cookie...'
+python scripts/aggiorna_quotazioni.py --config config.github.json
+```
 
-- **Probabili formazioni Fantacalcio.it**: percentuale di titolarità e stato del giocatore (`Infortunato`, `In dubbio`, `Squalificato`, `Diffidato`). La fonte viene ignorata se l'ultimo aggiornamento ha più di 21 giorni, per evitare dati obsoleti.
-- **Understat**: minuti, partite, gol, assist, xG, xA, tiri, key pass, npxG, xGChain, xGBuildup e metriche calcolate xG/90, xA/90 e xG+xA/90.
-- **Guide Fantacalcio.it**: gerarchia rigoristi e calci da fermo, salvata con la stagione di riferimento per non confondere dati storici e correnti.
+## GitHub Actions
 
-Il matching delle fonti esterne è conservativo: i dati vengono collegati solo quando il giocatore è identificato in modo univoco. I dati avanzati sono opzionali e non bloccano l'aggiornamento delle quotazioni.
+### `update-data.yml`
+
+Parte quando:
+
+- ogni giorno alle **09:00 Europe/Rome**;
+- viene modificato un file `scripts/**/*.py`;
+- cambia `config.github.json`;
+- cambia `requirements.txt`;
+- viene avviato manualmente.
+
+Aggiorna `public/players.json` e crea un commit solo se il catalogo cambia. Se crea un nuovo catalogo, richiama direttamente il workflow di build/deploy passando il nuovo commit.
+
+Questo passaggio esplicito è necessario perché un push effettuato con il `GITHUB_TOKEN` del workflow non deve essere usato come trigger implicito per un secondo workflow.
+
+### `deploy-pages.yml`
+
+Parte quando cambia il frontend:
+
+- `src/**`;
+- `public/**`;
+- `index.html`;
+- `package.json`;
+- `vite.config.js`;
+- il workflow stesso.
+
+Esegue:
+
+```text
+validate -> npm install -> npm run build -> upload dist -> GitHub Pages
+```
+
+È anche un workflow riutilizzabile: `update-data.yml` lo richiama quando `players.json` viene aggiornato automaticamente.
 
 ## Secret GitHub
 
-Creare in:
+Configurare:
 
-`Settings -> Secrets and variables -> Actions -> New repository secret`
-
-il secret:
-
-`FANTACALCIO_COOKIE`
-
-Il valore deve essere il contenuto completo dell'header HTTP `Cookie`.
-
-Non inserire il cookie in `config.github.json`, `index.html` o `players.json`.
-
-## GitHub Pages
-
-Repository pubblico se si usa GitHub Free.
-
-In:
-
-`Settings -> Pages -> Build and deployment -> Source`
-
-selezionare:
-
-`GitHub Actions`
-
-Workflow:
-
-- `.github/workflows/update-quotazioni.yml`: ogni giorno aggiorna Excel + `players.json`, committa le variazioni e pubblica GitHub Pages;
-- `.github/workflows/pages.yml`: pubblica Pages quando modifichi manualmente `index.html` o `players.json` su `main`.
-
-L'URL sarà normalmente:
-
-`https://USERNAME.github.io/NOME-REPOSITORY/`
-
-## Esecuzione locale
-
-Configurazione dipendenze
-
-```bash
-python -m venv venv
-source venv/bin/activate
-python -m pip install -r requirements.txt
+```text
+FANTACALCIO_COOKIE
 ```
 
-Per aggiornare i dati:
+in `Settings -> Secrets and variables -> Actions`.
 
-```bash
-export FANTACALCIO_COOKIE='fantacalcio.it=;'
-python -m pip install -r requirements.txt
-python aggiorna_quotazioni.py --config config.github.json
-```
+Il cookie non viene inserito in `players.json`, nella build React o nell'artefatto GitHub Pages.
 
-Per provare la pagina localmente serve un server HTTP perché `index.html` carica `players.json` con `fetch`:
+## Persistenza browser
 
-```bash
-python -m http.server 8000
-```
+- workspace multi-asta: `fantacalcio-react-workspace-v1`
+- storico rose: `fantacalcio-asta-rosters-v1`
+- migrazione automatica dalla precedente `fantacalcio-asta-v1`
 
-Aprire quindi `http://localhost:8000/`.
-
-## Asta web
-
-La pagina `index.html`:
-
-- salva automaticamente la rosa e i budget nel `localStorage` del browser;
-- mostra i dettagli completi del giocatore tramite il pulsante info;
-- mostra nel modale le statistiche Fantacalcio disponibili, separate per stagione;
-- mostra disponibilità/titolarità dalle probabili formazioni quando il dato è recente;
-- mostra le metriche avanzate Understat (xG/xA e indicatori per 90 minuti) quando disponibili;
-- mostra gerarchie di rigori e calci da fermo Fantacalcio con indicazione della stagione;
-- mostra indicatori asta calcolati: costo vs stima e costo vs FVM;
-- esporta la rosa compilata in CSV con costo di acquisto;
-- legge il catalogo aggiornato da `players.json`.
-
-`players.json` viene rigenerato dal workflow a partire dai fogli Portieri, Difensori, Centrocampisti e Attaccanti e contiene tutte le colonne informative A:M del workbook, le statistiche Fantacalcio associate per `Id`, le metriche avanzate eventualmente collegate e i dati recenti di disponibilità/titolarità.
-
-### Understat: primo caricamento
-
-Il file `players.json` iniziale puo avere `advanced: {}`. I dati Understat vengono popolati dal workflow GitHub.
-Per la stagione 2025/26 il primo caricamento e obbligatorio: se la pagina lega non espone `playersData`, lo script prova automaticamente lo scraping HTML delle pagine delle singole squadre. Se anche il fallback fallisce, il workflow termina con errore invece di pubblicare silenziosamente un catalogo senza dati avanzati. Dopo il primo caricamento riuscito, eventuali errori temporanei mantengono gli ultimi dati Understat disponibili.
+Lo storico supporta import/export JSON singolo e multiplo.
