@@ -68,7 +68,7 @@ function statFor(player, key) {
 
 const columns = [
   ['role', 'Ruolo'], ['name', 'Giocatore'], ['team', 'Squadra'], ['tacticalRole', 'Posizione / modulo'], ['injury', 'Stato'],
-  ['playProbability', 'Prob. prossima partita'], ['fvm', 'FVM'], ['quote', 'Qt.A'], ['diff', 'Diff.'], ['fvmM', 'FVM M'],
+  ['playProbability', 'Prob. prossima partita'], ['fvm', 'FVM'],
   ['presenze', 'Presenze'], ['mv', 'MV'], ['fm', 'FM'], ['gol', 'Gol'], ['assist', 'Assist'],
 ];
 
@@ -89,9 +89,6 @@ export default function PlayerTable({ catalog, meta }) {
     injury: player.injury || {},
     playProbability: player.availability?.titolarita ?? null,
     fvm: Number(player.fvm || 0),
-    quote: player.info?.['Qt.A'] ?? null,
-    diff: player.info?.['Diff.'] ?? null,
-    fvmM: player.info?.['FVM M'] ?? null,
     presenze: statFor(player, 'Pv'),
     mv: statFor(player, 'Mv'),
     fm: statFor(player, 'Fm'),
@@ -155,9 +152,9 @@ export default function PlayerTable({ catalog, meta }) {
 
       <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
         <TableContainer sx={{ overflowX: 'auto', maxHeight: 'calc(100vh - 255px)' }}>
-          <Table stickyHeader size="small" sx={{ minWidth: 1450 }}>
+          <Table stickyHeader size="small" sx={{ minWidth: 1120 }}>
             <TableHead><TableRow>
-              {columns.map(([key, label]) => <TableCell key={key} align={['fvm','quote','diff','fvmM','presenze','mv','fm','gol','assist'].includes(key) ? 'right' : 'left'}><TableSortLabel active={sort.key === key} direction={sort.key === key ? sort.dir : 'asc'} onClick={() => toggleSort(key)}>{label}</TableSortLabel></TableCell>)}
+              {columns.map(([key, label]) => <TableCell key={key} align={['fvm','presenze','mv','fm','gol','assist'].includes(key) ? 'right' : 'left'}><TableSortLabel active={sort.key === key} direction={sort.key === key ? sort.dir : 'asc'} onClick={() => toggleSort(key)}>{label}</TableSortLabel></TableCell>)}
               <TableCell align="center">Operazioni</TableCell>
             </TableRow></TableHead>
             <TableBody>
@@ -166,13 +163,10 @@ export default function PlayerTable({ catalog, meta }) {
                   <TableCell><RoleBadge role={row.role} /></TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>{row.name}</TableCell>
                   <TableCell>{row.team}</TableCell>
-                  <TableCell>{row.tacticalRole ? <Box><b>{row.tacticalRole}</b><Typography variant="caption" display="block" color="text.secondary">{row.formation || '—'}</Typography></Box> : '—'}</TableCell>
+                  <TableCell>{row.tacticalRole ? <Box><b>{row.tacticalRole}</b> - <Typography variant="caption" display="block" color="text.secondary">{row.formation || '—'}</Typography></Box> : '—'}</TableCell>
                   <TableCell><InjuryStatusChip injury={row.injury} /></TableCell>
                   <TableCell align="center">{probabilityChip(row.playProbability)}</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 800 }}>{money(row.fvm)}</TableCell>
-                  <TableCell align="right">{number(row.quote)}</TableCell>
-                  <TableCell align="right">{number(row.diff)}</TableCell>
-                  <TableCell align="right">{number(row.fvmM)}</TableCell>
                   <TableCell align="right">{number(row.presenze)}</TableCell>
                   <TableCell align="right">{number(row.mv)}</TableCell>
                   <TableCell align="right">{number(row.fm)}</TableCell>

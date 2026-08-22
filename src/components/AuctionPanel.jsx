@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Box, ButtonGroup, Chip, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, ButtonGroup, Chip, IconButton, InputAdornment, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -49,37 +49,56 @@ export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMut
 
   return (
     <Stack spacing={1.1}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', sm: 'center' }} gap={1}>
-        <Box>
-          <Typography variant="h5">{auction.name}</Typography>
-          <Typography variant="caption" color="text.secondary">Dati catalogo: {catalogUpdatedAt || '—'}{auction.historyId ? ' · collegata allo storico' : ''}</Typography>
-        </Box>
-        <Stack direction="row" gap={.75} alignItems="center" flexWrap="wrap">
-          <TextField
-            size="small"
-            type="number"
-            label="Budget totale"
-            value={budgetInput}
-            error={Number(budgetInput || 0) < allocatedBudget}
-            helperText={Number(budgetInput || 0) < allocatedBudget ? 'Inferiore ai reparti' : ' '}
-            onChange={(event) => setBudgetInput(event.target.value)}
-            onBlur={() => {
-              const value = Number(budgetInput || 0);
-              if (value >= allocatedBudget) onMutate((next) => { next.totalBudget = value; });
-              else setBudgetInput(String(state.totalBudget));
-            }}
-            sx={{ width: 120, '& .MuiFormHelperText-root': { m: 0, fontSize: '0.58rem', textAlign: 'center' } }}
-            inputProps={{ style: { textAlign: 'center' } }}
-          />
-          <ButtonGroup variant="outlined">
-            <Tooltip title="Undo"><span><IconButton disabled={!canUndo} onClick={onUndo}><UndoIcon /></IconButton></span></Tooltip>
-            <Tooltip title="Redo"><span><IconButton disabled={!canRedo} onClick={onRedo}><RedoIcon /></IconButton></span></Tooltip>
-            <Tooltip title="Configura"><IconButton onClick={() => setConfigOpen(true)}><SettingsIcon /></IconButton></Tooltip>
-            <Tooltip title={auction.historyId ? 'Aggiorna rosa nello storico' : 'Salva rosa nello storico'}><IconButton color={auction.historyId ? 'primary' : 'default'} onClick={onSaveOrUpdate}><SaveIcon /></IconButton></Tooltip>
-            <Tooltip title="Gestione rose"><IconButton onClick={onOpenHistory}><HistoryIcon /></IconButton></Tooltip>
-          </ButtonGroup>
+      <Paper variant="outlined" sx={{ px: { xs: .75, sm: 1 }, py: .65 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={.75} flexWrap="wrap">
+          <Box sx={{ minWidth: 0, flex: '1 1 220px' }}>
+            <Stack direction="row" alignItems="baseline" spacing={.75} flexWrap="wrap">
+              <Typography variant="h6" noWrap>{auction.name}</Typography>
+              <Typography variant="caption" color="text.secondary" noWrap>
+                Catalogo {catalogUpdatedAt || '—'}{auction.historyId ? ' · storico' : ''}
+              </Typography>
+            </Stack>
+          </Box>
+
+          <Stack direction="row" gap={.5} alignItems="center" sx={{ ml: 'auto' }}>
+            <Tooltip title={Number(budgetInput || 0) < allocatedBudget ? 'Budget inferiore alla somma dei reparti' : 'Budget totale'}>
+              <TextField
+                size="small"
+                type="number"
+                value={budgetInput}
+                error={Number(budgetInput || 0) < allocatedBudget}
+                onChange={(event) => setBudgetInput(event.target.value)}
+                onBlur={() => {
+                  const value = Number(budgetInput || 0);
+                  if (value >= allocatedBudget) onMutate((next) => { next.totalBudget = value; });
+                  else setBudgetInput(String(state.totalBudget));
+                }}
+                slotProps={{
+                  htmlInput: { style: { textAlign: 'center', padding: '5px 26px 5px 8px' } },
+                  input: { endAdornment: <InputAdornment position="end">cr</InputAdornment> },
+                }}
+                sx={{ width: 104, '& .MuiInputAdornment-root': { ml: -.25 }, '& .MuiInputAdornment-root .MuiTypography-root': { fontSize: '.65rem', color: 'text.secondary' } }}
+              />
+            </Tooltip>
+
+            <ButtonGroup
+              variant="outlined"
+              size="small"
+              sx={{
+                bgcolor: 'background.default',
+                '& .MuiIconButton-root': { borderRadius: 0, p: .55, width: 30, height: 30 },
+                '& .MuiSvgIcon-root': { fontSize: 17 },
+              }}
+            >
+              <Tooltip title="Undo"><span><IconButton disabled={!canUndo} onClick={onUndo}><UndoIcon /></IconButton></span></Tooltip>
+              <Tooltip title="Redo"><span><IconButton disabled={!canRedo} onClick={onRedo}><RedoIcon /></IconButton></span></Tooltip>
+              <Tooltip title="Configura"><IconButton onClick={() => setConfigOpen(true)}><SettingsIcon /></IconButton></Tooltip>
+              <Tooltip title={auction.historyId ? 'Aggiorna rosa nello storico' : 'Salva rosa nello storico'}><IconButton color={auction.historyId ? 'primary' : 'default'} onClick={onSaveOrUpdate}><SaveIcon /></IconButton></Tooltip>
+              <Tooltip title="Gestione rose"><IconButton onClick={onOpenHistory}><HistoryIcon /></IconButton></Tooltip>
+            </ButtonGroup>
+          </Stack>
         </Stack>
-      </Stack>
+      </Paper>
 
       <AuctionSummary state={state} catalog={catalog} metrics={metrics} />
       <AuctionTable state={state} catalog={catalog} metrics={metrics} onPatchSlot={patchSlot} onShowPlayer={setInfoPlayer} />
