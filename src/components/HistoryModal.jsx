@@ -73,7 +73,7 @@ export default function HistoryModal({ open, onClose, history, activeAuction, on
                     <Tooltip title="Carica nel tab corrente"><IconButton color={active ? 'primary' : 'default'} onClick={() => onLoadCurrent(item)}><FolderOpenIcon /></IconButton></Tooltip>
                     <Tooltip title="Apri in un nuovo tab asta"><IconButton onClick={() => onOpenNew(item)}><AddToPhotosIcon /></IconButton></Tooltip>
                     <Tooltip title="Esporta JSON"><IconButton onClick={() => exportItems([item])}><FileDownloadIcon /></IconButton></Tooltip>
-                    <Tooltip title="Elimina"><IconButton color="error" onClick={() => onDelete(item)}><DeleteOutlineIcon /></IconButton></Tooltip>
+                    <Tooltip title="Elimina"><IconButton color="error" onClick={() => onDelete(item)}><DeleteOutlinedIcon /></IconButton></Tooltip>
                   </Stack>
                 }>
                   <Checkbox checked={selected.has(item.id)} onChange={() => toggle(item.id)} />
