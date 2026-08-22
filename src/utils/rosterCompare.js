@@ -13,7 +13,8 @@ function catalogIndex(catalog, role) {
   const byName = new Map();
   (catalog?.[role] || []).forEach((player) => {
     if (player?.id !== undefined && player?.id !== null) byId.set(String(player.id), player);
-    byName.set(normalizeName(player?.name), player);
+    const normalized = normalizeName(player?.name);
+    if (normalized && !byName.has(normalized)) byName.set(normalized, player);
   });
   return { byId, byName };
 }
@@ -23,17 +24,22 @@ function rosterEntries(state, catalog, role) {
   const result = new Map();
   (state?.slots?.[role] || []).forEach((slot) => {
     if (!slot?.player && slot?.playerId === null) return;
-    const id = slot?.playerId;
-    const player = id !== undefined && id !== null
-      ? index.byId.get(String(id))
-      : index.byName.get(normalizeName(slot?.player));
+    const storedId = slot?.playerId;
+    const normalizedStoredName = normalizeName(slot?.player);
+    // Gli snapshot storici meno recenti possono avere solo il nome oppure un ID non più coerente.
+    // Risolviamo sempre il giocatore canonico dal catalogo: prima per ID, poi per nome.
+    const player = (storedId !== undefined && storedId !== null ? index.byId.get(String(storedId)) : null)
+      || (normalizedStoredName ? index.byName.get(normalizedStoredName) : null);
     const name = player?.name || String(slot?.player || '').trim();
     if (!name) return;
-    const key = id !== undefined && id !== null ? `id:${id}` : `name:${normalizeName(name)}`;
+    const canonicalId = player?.id ?? null;
+    const key = canonicalId !== null && canonicalId !== undefined
+      ? `id:${String(canonicalId)}`
+      : `name:${normalizeName(name)}`;
     result.set(key, {
       key,
       role,
-      id: id ?? player?.id ?? null,
+      id: canonicalId ?? storedId ?? null,
       name,
       team: player?.team || '',
       cost: Number(slot?.actual || 0),

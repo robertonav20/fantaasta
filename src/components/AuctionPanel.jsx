@@ -10,7 +10,7 @@ import AuctionTable from './AuctionTable';
 import ConfigModal from './ConfigModal';
 import PlayerModal from './PlayerModal';
 import { ROLE_ORDER } from '../constants';
-import { clone, estimate, selectedPlayer } from '../utils';
+import { clone, estimate, normalizeText, selectedPlayer } from '../utils';
 
 export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMutate, onUndo, onRedo, onSaveOrUpdate, onOpenHistory, onOpenCompare, catalogUpdatedAt }) {
   const state = auction.state;
@@ -45,7 +45,36 @@ export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMut
   }, [state, catalog]);
 
   const allocatedBudget = ROLE_ORDER.reduce((sum, role) => sum + Number(state.roleBudgets[role] || 0), 0);
-  const patchSlot = (role, index, patch) => onMutate((next) => { next.slots[role][index] = { ...next.slots[role][index], ...patch }; });
+
+  const playerIdentity = (player, fallbackName = '') => {
+    if (player?.id !== null && player?.id !== undefined) return `id:${String(player.id)}`;
+    const normalized = normalizeText(player?.name || fallbackName);
+    return normalized ? `name:${normalized}` : '';
+  };
+
+  const isPlayerSelected = (candidate, currentRole, currentIndex) => {
+    const candidateKey = playerIdentity(candidate);
+    if (!candidateKey) return false;
+    return ROLE_ORDER.some((role) => state.slots[role].some((slot, index) => {
+      if (role === currentRole && index === currentIndex) return false;
+      const currentPlayer = selectedPlayer(catalog, role, slot);
+      return playerIdentity(currentPlayer, slot.player) === candidateKey;
+    }));
+  };
+
+  const patchSlot = (role, index, patch) => {
+    const isPlayerChange = Object.prototype.hasOwnProperty.call(patch, 'playerId') || Object.prototype.hasOwnProperty.call(patch, 'player');
+    if (isPlayerChange && (patch.playerId !== null || patch.player)) {
+      const list = catalog?.[role] || [];
+      const candidate = list.find((player) => String(player.id) === String(patch.playerId))
+        || list.find((player) => normalizeText(player.name) === normalizeText(patch.player));
+      if (candidate && isPlayerSelected(candidate, role, index)) {
+        window.alert(`${candidate.name} è già presente in questa rosa.`);
+        return;
+      }
+    }
+    onMutate((next) => { next.slots[role][index] = { ...next.slots[role][index], ...patch }; });
+  };
 
   return (
     <Stack spacing={1.1}>
@@ -102,7 +131,7 @@ export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMut
       </Paper>
 
       <AuctionSummary state={state} catalog={catalog} metrics={metrics} />
-      <AuctionTable state={state} catalog={catalog} metrics={metrics} onPatchSlot={patchSlot} onShowPlayer={setInfoPlayer} />
+      <AuctionTable state={state} catalog={catalog} metrics={metrics} onPatchSlot={patchSlot} onShowPlayer={setInfoPlayer} isPlayerSelected={isPlayerSelected} />
 
       <Stack direction="row" gap={.5} flexWrap="wrap" alignItems="center">
         <Typography variant="caption" color="text.secondary">Giocatori per squadra:</Typography>

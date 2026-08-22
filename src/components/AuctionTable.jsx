@@ -11,7 +11,7 @@ function actualTone(actual, expected) {
   return 'error.main';
 }
 
-export default function AuctionTable({ state, catalog, metrics, onPatchSlot, onShowPlayer }) {
+export default function AuctionTable({ state, catalog, metrics, onPatchSlot, onShowPlayer, isPlayerSelected }) {
   return (
     <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
       <TableContainer sx={{ overflowX: 'auto' }}>
@@ -28,7 +28,7 @@ export default function AuctionTable({ state, catalog, metrics, onPatchSlot, onS
                 return (
                   <TableRow key={`${role}-${index}`} hover sx={{ '&:nth-of-type(even)': { bgcolor: 'rgba(88,166,255,.025)' } }}>
                     <TableCell align="center"><Select size="small" value={slot.tier} onChange={(e) => onPatchSlot(role, index, { tier: e.target.value })} sx={{ width: 135, fontWeight: 800, bgcolor: TIER_COLORS[slot.tier], '& .MuiSelect-select': { textAlign: 'center', py: .55 } }}>{TIERS.map((tier) => <MenuItem key={tier} value={tier} sx={{ bgcolor: TIER_COLORS[tier] }}>{tier} - {money(estimate(state, role, tier))}cr</MenuItem>)}</Select></TableCell>
-                    <TableCell sx={{ minWidth: 245 }}><Autocomplete size="small" options={catalog?.[role] || []} value={player} onChange={(_, value) => onPatchSlot(role, index, { player: value?.name || '', playerId: value?.id ?? null })} getOptionLabel={(option) => option?.name || ''} isOptionEqualToValue={(option, value) => String(option?.id) === String(value?.id)} renderOption={(props, option) => <li {...props} key={option.id}><Box sx={{ flex: 1 }}><b>{option.name}</b> · <Typography variant="caption" color="text.secondary" display="block">{option.team} · FVM {option.fvm}</Typography></Box></li>} renderInput={(params) => <TextField {...params} placeholder="Cerca giocatore" />} /></TableCell>
+                    <TableCell sx={{ minWidth: 245 }}><Autocomplete size="small" options={catalog?.[role] || []} value={player} onChange={(_, value) => onPatchSlot(role, index, { player: value?.name || '', playerId: value?.id ?? null })} getOptionLabel={(option) => option?.name || ''} isOptionEqualToValue={(option, value) => String(option?.id) === String(value?.id)} getOptionDisabled={(option) => Boolean(isPlayerSelected?.(option, role, index))} renderOption={(props, option) => <li {...props} key={option.id}><Box sx={{ flex: 1 }}><b>{option.name}</b><Typography variant="caption" color="text.secondary" display="block">{option.team} · FVM {option.fvm}</Typography></Box></li>} renderInput={(params) => <TextField {...params} placeholder="Cerca giocatore" />} /></TableCell>
                     <TableCell>{player?.team || '—'}</TableCell>
                     <TableCell align="right" sx={{ fontWeight: 800 }}>{player ? money(player.fvm) : '—'}</TableCell>
                     <TableCell align="center"><TextField size="small" type="number" value={slot.actual} onChange={(e) => onPatchSlot(role, index, { actual: Number(e.target.value || 0) })} sx={{ width: 100, '& input': { textAlign: 'center', fontWeight: 900, color: actualTone(Number(slot.actual || 0), expected) }, '& .MuiOutlinedInput-notchedOutline': { borderColor: actualTone(Number(slot.actual || 0), expected) } }} InputProps={{ endAdornment: <InputAdornment position="end">cr</InputAdornment> }} /></TableCell>

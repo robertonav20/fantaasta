@@ -32,19 +32,32 @@ function rowTone(status) {
   return 'rgba(210,153,34,.12)';
 }
 
-function statusChip(status) {
+function statusChip(status, labelA, labelB) {
   if (status === 'same') return <Chip size="small" color="success" variant="outlined" label="Comune" />;
-  if (status === 'onlyA') return <Chip size="small" color="primary" variant="outlined" label="Solo rosa A" />;
-  return <Chip size="small" color="warning" variant="outlined" label="Solo rosa B" />;
+  if (status === 'onlyA') return <Chip size="small" color="primary" variant="outlined" label={`Solo ${labelA}`} />;
+  return <Chip size="small" color="warning" variant="outlined" label={`Solo ${labelB}`} />;
 }
 
 function RoleDetail({ role, data, labelA, labelB }) {
   if (!data.rows.length) return null;
   return (
     <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1} sx={{ p: .8, bgcolor: 'rgba(88,166,255,.06)' }}>
-        <Stack direction="row" spacing={.7} alignItems="center"><RoleBadge role={role} /><Typography fontWeight={900}>{ROLE_NAMES[role]}</Typography></Stack>
-        <Typography variant="caption" color="text.secondary">Comuni {data.same} · Solo A {data.onlyA} · Solo B {data.onlyB}</Typography>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        justifyContent="space-between"
+        gap={1}
+        sx={{ px: 1.35, py: 1.15, bgcolor: 'rgba(88,166,255,.06)' }}
+      >
+        <Stack direction="row" spacing={.9} alignItems="center">
+          <RoleBadge role={role} />
+          <Typography fontWeight={900} sx={{ letterSpacing: '.02em' }}>{ROLE_NAMES[role]}</Typography>
+        </Stack>
+        <Stack direction="row" spacing={.6} useFlexGap flexWrap="wrap" alignItems="center">
+          <Chip size="small" color="success" variant="outlined" label={`Comuni: ${data.same}`} />
+          <Chip size="small" color="primary" variant="outlined" label={`${labelA}: ${data.onlyA} diversi`} />
+          <Chip size="small" color="warning" variant="outlined" label={`${labelB}: ${data.onlyB} diversi`} />
+        </Stack>
       </Stack>
       <TableContainer sx={{ overflowX: 'auto' }}>
         <Table size="small" sx={{ minWidth: 720 }}>
@@ -54,7 +67,7 @@ function RoleDetail({ role, data, labelA, labelB }) {
               <TableRow key={row.key} sx={{ bgcolor: rowTone(row.status) }}>
                 <TableCell sx={{ fontWeight: 800 }}>{row.name}</TableCell>
                 <TableCell>{row.team || '—'}</TableCell>
-                <TableCell>{statusChip(row.status)}</TableCell>
+                <TableCell>{statusChip(row.status, labelA, labelB)}</TableCell>
                 <TableCell align="right">{row.costA === null ? '—' : `${money(row.costA)}cr`}</TableCell>
                 <TableCell align="right">{row.costB === null ? '—' : `${money(row.costB)}cr`}</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 800, color: row.costDelta === null ? 'text.secondary' : deltaColor(row.costDelta) }}>{row.costDelta === null ? '—' : deltaText(row.costDelta)}</TableCell>
@@ -112,15 +125,15 @@ export default function RosterCompareModal({ open, onClose, auctions, history, a
             <>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2,1fr)', md: 'repeat(4,1fr)' }, gap: .75 }}>
                 <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Giocatori comuni</Typography><Typography fontWeight={900} fontSize="1.05rem" color="success.main">{comparison.totalSame}</Typography></Paper>
-                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Solo rosa A</Typography><Typography fontWeight={900} fontSize="1.05rem" color="primary.main">{comparison.totalOnlyA}</Typography></Paper>
-                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Solo rosa B</Typography><Typography fontWeight={900} fontSize="1.05rem" color="warning.main">{comparison.totalOnlyB}</Typography></Paper>
+                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Solo {itemA.name}</Typography><Typography fontWeight={900} fontSize="1.05rem" color="primary.main">{comparison.totalOnlyA}</Typography></Paper>
+                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Solo {itemB.name}</Typography><Typography fontWeight={900} fontSize="1.05rem" color="warning.main">{comparison.totalOnlyB}</Typography></Paper>
                 <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Δ spesa B − A</Typography><Typography fontWeight={900} fontSize="1.05rem" color={deltaColor(comparison.totalSpentDelta)}>{deltaText(comparison.totalSpentDelta)}</Typography></Paper>
               </Box>
 
               <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
                 <TableContainer sx={{ overflowX: 'auto' }}>
                   <Table size="small" sx={{ minWidth: 820 }}>
-                    <TableHead><TableRow><TableCell>Reparto</TableCell><TableCell align="center">Comuni</TableCell><TableCell align="center">Solo A</TableCell><TableCell align="center">Solo B</TableCell><TableCell align="right">Spesa A</TableCell><TableCell align="right">Spesa B</TableCell><TableCell align="right">Δ spesa</TableCell><TableCell align="right">Residuo A</TableCell><TableCell align="right">Residuo B</TableCell></TableRow></TableHead>
+                    <TableHead><TableRow><TableCell>Reparto</TableCell><TableCell align="center">Comuni</TableCell><TableCell align="center">{itemA.name}</TableCell><TableCell align="center">{itemB.name}</TableCell><TableCell align="right">Spesa {itemA.name}</TableCell><TableCell align="right">Spesa {itemB.name}</TableCell><TableCell align="right">Δ spesa</TableCell><TableCell align="right">Residuo {itemA.name}</TableCell><TableCell align="right">Residuo {itemB.name}</TableCell></TableRow></TableHead>
                     <TableBody>
                       {ROLE_ORDER.map((role) => {
                         const data = comparison.roles[role];
