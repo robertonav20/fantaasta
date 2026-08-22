@@ -12,7 +12,7 @@ import PlayerModal from './PlayerModal';
 import { ROLE_ORDER } from '../constants';
 import { clone, estimate, selectedPlayer } from '../utils';
 
-export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMutate, onUndo, onRedo, onSaveOrUpdate, onOpenHistory, catalogUpdatedAt }) {
+export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMutate, onUndo, onRedo, onSaveOrUpdate, onOpenHistory, onOpenCompare, catalogUpdatedAt }) {
   const state = auction.state;
   const [configOpen, setConfigOpen] = useState(false);
   const [infoPlayer, setInfoPlayer] = useState(null);
@@ -94,6 +94,7 @@ export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMut
               <Tooltip title="Redo"><span><IconButton disabled={!canRedo} onClick={onRedo}><RedoIcon /></IconButton></span></Tooltip>
               <Tooltip title="Configura"><IconButton onClick={() => setConfigOpen(true)}><SettingsIcon /></IconButton></Tooltip>
               <Tooltip title={auction.historyId ? 'Aggiorna rosa nello storico' : 'Salva rosa nello storico'}><IconButton color={auction.historyId ? 'primary' : 'default'} onClick={onSaveOrUpdate}><SaveIcon /></IconButton></Tooltip>
+              <Tooltip title="Confronta rose"><IconButton onClick={onOpenCompare}><Box component="span" sx={{ fontWeight: 900, fontSize: 16, lineHeight: 1 }}>⇄</Box></IconButton></Tooltip>
               <Tooltip title="Gestione rose"><IconButton onClick={onOpenHistory}><HistoryIcon /></IconButton></Tooltip>
             </ButtonGroup>
           </Stack>

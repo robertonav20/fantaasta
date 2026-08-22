@@ -3,10 +3,12 @@ import { Stack } from '@mui/material';
 import AuctionPanel from '../components/AuctionPanel';
 import AuctionTabs from '../components/AuctionTabs';
 import HistoryModal from '../components/HistoryModal';
+import RosterCompareModal from '../components/RosterCompareModal';
 import { clone, uid } from '../utils';
 
 export default function AuctionsPage({ workspaceApi, historyApi, catalog, catalogUpdatedAt, onNotify }) {
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [compareOpen, setCompareOpen] = useState(false);
   const { workspace, activeAuction } = workspaceApi;
   const { history } = historyApi;
 
@@ -76,7 +78,17 @@ export default function AuctionsPage({ workspaceApi, historyApi, catalog, catalo
         onRedo={() => workspaceApi.redoAuction(activeAuction.id)}
         onSaveOrUpdate={saveOrUpdate}
         onOpenHistory={() => setHistoryOpen(true)}
+        onOpenCompare={() => setCompareOpen(true)}
         catalogUpdatedAt={catalogUpdatedAt}
+      />
+
+      <RosterCompareModal
+        open={compareOpen}
+        onClose={() => setCompareOpen(false)}
+        auctions={workspace.auctions}
+        history={history}
+        activeAuctionId={activeAuction.id}
+        catalog={catalog}
       />
 
       <HistoryModal

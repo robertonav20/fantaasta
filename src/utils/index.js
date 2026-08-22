@@ -3,3 +3,4 @@ export * from './auction';
 export * from './playerUtils';
 export * from './budget';
 export * from './exportImport';
+export * from './rosterCompare';
