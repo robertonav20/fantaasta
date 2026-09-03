@@ -14,14 +14,14 @@ function probabilityChip(value) {
   if (value === null || value === undefined || value === '') return <Typography color="text.secondary">—</Typography>;
   const n = Number(value);
   const color = n >= 75 ? 'success' : n >= 50 ? 'warning' : 'error';
-  return <Chip size="small" color={color} label={`${Math.round(n)}%`} sx={{ minWidth: 52 }} />;
+  return <Chip size="small" color={color} label={`${Math.round(n)}%`} sx={{ minWidth: 52, fontWeight: 800, fontSize: 'larger' }}/>;
 }
 
 function InjuryStatusChip({ injury }) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   if (injury?.injured !== true) {
-    return <Chip size="small" color="success" variant="outlined" label="Disponibile" />;
+    return <Chip size="small" color="success" variant="outlined" label="Disponibile" sx={{ fontWeight: 800, fontSize: 'larger' }}/>;
   }
 
   const cause = injury.description || injury.status || 'Dettaglio non disponibile';
@@ -41,7 +41,7 @@ function InjuryStatusChip({ injury }) {
           color="error"
           label="Infortunato"
           onClick={(event) => setAnchorEl(event.currentTarget)}
-          sx={{ cursor: 'pointer' }}
+          sx={{ cursor: 'pointer', fontWeight: 800, fontSize: 'larger' }}
         />
       </Tooltip>
       <Popover
