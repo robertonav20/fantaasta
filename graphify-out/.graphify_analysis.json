@@ -1,0 +1,441 @@
+{
+  "communities": {
+    "0": [
+      "ref_mui_material",
+      "src_components_auctionpanel",
+      "src_components_auctionpanel_auctionpanel",
+      "src_components_auctionsummary",
+      "src_components_auctionsummary_auctionsummary",
+      "src_components_auctionsummary_rolesummary",
+      "src_components_auctiontable",
+      "src_components_auctiontable_actualtone",
+      "src_components_auctiontable_auctiontable",
+      "src_components_configmodal",
+      "src_components_configmodal_configmodal",
+      "src_components_playermodal",
+      "src_components_playermodal_display",
+      "src_components_playermodal_infogrid",
+      "src_components_playermodal_labels",
+      "src_components_playermodal_playermodal",
+      "src_components_playermodal_section",
+      "src_components_playertable",
+      "src_components_playertable_columns",
+      "src_components_playertable_injurystatuschip",
+      "src_components_playertable_playertable",
+      "src_components_playertable_probabilitychip",
+      "src_components_playertable_statfor",
+      "src_components_rolebadge",
+      "src_components_rolebadge_rolebadge",
+      "src_constants_auction",
+      "src_constants_auction_default_costs",
+      "src_constants_auction_limits",
+      "src_constants_auction_role_colors",
+      "src_constants_auction_role_names",
+      "src_constants_auction_role_order",
+      "src_constants_auction_role_short",
+      "src_constants_auction_tier_colors",
+      "src_constants_auction_tiers",
+      "src_constants_index",
+      "src_hooks_usecatalog",
+      "src_hooks_usecatalog_usecatalog",
+      "src_services_players",
+      "src_services_players_empty_catalog",
+      "src_services_players_fetchcatalog",
+      "src_utils_budget",
+      "src_utils_budget_estimate",
+      "src_utils_common_formatdatetime",
+      "src_utils_common_money",
+      "src_utils_common_normalizetext",
+      "src_utils_common_number",
+      "src_utils_index",
+      "src_utils_playerutils",
+      "src_utils_playerutils_selectedplayer"
+    ],
+    "1": [
+      "ref_react",
+      "src_app",
+      "src_app_app",
+      "src_components_auctiontabs",
+      "src_components_auctiontabs_auctiontabs",
+      "src_components_historymodal",
+      "src_components_historymodal_historymodal",
+      "src_components_mainnavigation",
+      "src_components_mainnavigation_mainnavigation",
+      "src_constants_auction_initial_state",
+      "src_constants_project",
+      "src_constants_project_project_version",
+      "src_constants_storage",
+      "src_constants_storage_history_limit",
+      "src_constants_storage_storage",
+      "src_hooks_useauctionworkspace",
+      "src_hooks_useauctionworkspace_useauctionworkspace",
+      "src_hooks_userosterhistory",
+      "src_hooks_userosterhistory_userosterhistory",
+      "src_main",
+      "src_pages_auctionspage",
+      "src_pages_auctionspage_auctionspage",
+      "src_pages_playerspage",
+      "src_pages_playerspage_playerspage",
+      "src_services_storage",
+      "src_services_storage_createblankauction",
+      "src_services_storage_loadhistory",
+      "src_services_storage_loadworkspace",
+      "src_services_storage_readjson",
+      "src_services_storage_savehistory",
+      "src_services_storage_saveworkspace",
+      "src_theme",
+      "src_theme_theme",
+      "src_utils_auction",
+      "src_utils_auction_blankslot",
+      "src_utils_auction_createblankauctionstate",
+      "src_utils_auction_normalizeauctionstate",
+      "src_utils_budget_rostermeta",
+      "src_utils_common",
+      "src_utils_common_clone",
+      "src_utils_common_safefilepart",
+      "src_utils_common_uid",
+      "src_utils_exportimport",
+      "src_utils_exportimport_clamphistory",
+      "src_utils_exportimport_defaultrostername",
+      "src_utils_exportimport_downloadjson",
+      "src_utils_exportimport_extractimportedrosters",
+      "src_utils_exportimport_normalizeimportedroster",
+      "src_utils_exportimport_rosterexportpackage"
+    ],
+    "2": [
+      "package",
+      "package_dependencies",
+      "package_dependencies_emotion_react",
+      "package_dependencies_emotion_styled",
+      "package_dependencies_mui_icons_material",
+      "package_dependencies_mui_material",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_devdependencies",
+      "package_devdependencies_vite",
+      "package_devdependencies_vitejs_plugin_react",
+      "package_engines",
+      "package_engines_node",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_preview",
+      "package_scripts_validate",
+      "package_type",
+      "package_version",
+      "ref_emotion_react",
+      "ref_emotion_styled",
+      "ref_mui_icons_material",
+      "ref_react_dom",
+      "ref_vite",
+      "ref_vitejs_plugin_react",
+      "vite_config"
+    ],
+    "3": [
+      "namespace",
+      "path",
+      "scripts_aggiorna_quotazioni",
+      "scripts_aggiorna_quotazioni_count_data_rows",
+      "scripts_aggiorna_quotazioni_load_config",
+      "scripts_aggiorna_quotazioni_load_existing_enrichment",
+      "scripts_aggiorna_quotazioni_load_existing_injuries",
+      "scripts_aggiorna_quotazioni_load_existing_set_pieces",
+      "scripts_aggiorna_quotazioni_load_existing_stats",
+      "scripts_aggiorna_quotazioni_load_player_identities",
+      "scripts_aggiorna_quotazioni_main",
+      "scripts_aggiorna_quotazioni_parse_args",
+      "scripts_aggiorna_quotazioni_player_id_key",
+      "scripts_aggiorna_quotazioni_rationale_2",
+      "scripts_aggiorna_quotazioni_rationale_435",
+      "scripts_aggiorna_quotazioni_resolve_path",
+      "scripts_aggiorna_quotazioni_sheet_lookup",
+      "scripts_aggiorna_quotazioni_validate_source_workbook"
+    ],
+    "4": [
+      "scripts_aggiorna_quotazioni_detect_team_from_token",
+      "scripts_aggiorna_quotazioni_fc_name_signature",
+      "scripts_aggiorna_quotazioni_formation_label",
+      "scripts_aggiorna_quotazioni_formation_parts",
+      "scripts_aggiorna_quotazioni_line_position_labels",
+      "scripts_aggiorna_quotazioni_match_player_id",
+      "scripts_aggiorna_quotazioni_name_tokens",
+      "scripts_aggiorna_quotazioni_names_compatible",
+      "scripts_aggiorna_quotazioni_parse_fantacalcio_set_pieces",
+      "scripts_aggiorna_quotazioni_parse_tactical_positions",
+      "scripts_aggiorna_quotazioni_rationale_1319",
+      "scripts_aggiorna_quotazioni_rationale_1335",
+      "scripts_aggiorna_quotazioni_rationale_1390",
+      "scripts_aggiorna_quotazioni_rationale_1563",
+      "scripts_aggiorna_quotazioni_rationale_475",
+      "scripts_aggiorna_quotazioni_split_player_list",
+      "scripts_aggiorna_quotazioni_team_key"
+    ],
+    "5": [
+      "any",
+      "scripts_aggiorna_quotazioni_build_player_catalog",
+      "scripts_aggiorna_quotazioni_download_injury_catalog",
+      "scripts_aggiorna_quotazioni_find_stats_header_row",
+      "scripts_aggiorna_quotazioni_injury_return_text",
+      "scripts_aggiorna_quotazioni_json_number",
+      "scripts_aggiorna_quotazioni_json_value",
+      "scripts_aggiorna_quotazioni_norm_text",
+      "scripts_aggiorna_quotazioni_parse_fantacalcio_injuries",
+      "scripts_aggiorna_quotazioni_parse_stats_workbook",
+      "scripts_aggiorna_quotazioni_rationale_1721",
+      "scripts_aggiorna_quotazioni_rationale_1853",
+      "scripts_aggiorna_quotazioni_rationale_1948",
+      "scripts_aggiorna_quotazioni_rationale_374",
+      "scripts_aggiorna_quotazioni_update_players_json"
+    ],
+    "6": [
+      "runtimeerror",
+      "scripts_aggiorna_quotazioni_download_availability_catalog",
+      "scripts_aggiorna_quotazioni_download_excel",
+      "scripts_aggiorna_quotazioni_download_set_pieces_catalogs",
+      "scripts_aggiorna_quotazioni_download_source",
+      "scripts_aggiorna_quotazioni_download_stats_catalogs",
+      "scripts_aggiorna_quotazioni_download_text",
+      "scripts_aggiorna_quotazioni_download_understat_league_json",
+      "scripts_aggiorna_quotazioni_get_cookie",
+      "scripts_aggiorna_quotazioni_parse_fantacalcio_availability",
+      "scripts_aggiorna_quotazioni_rationale_1095",
+      "scripts_aggiorna_quotazioni_rationale_1111",
+      "scripts_aggiorna_quotazioni_rationale_144",
+      "scripts_aggiorna_quotazioni_understat_api_url",
+      "scripts_aggiorna_quotazioni_updateerror"
+    ],
+    "7": [
+      "scripts_validate_project",
+      "scripts_validate_project_builtinprefixes",
+      "scripts_validate_project_collectsources",
+      "scripts_validate_project_declared",
+      "scripts_validate_project_forbidden",
+      "scripts_validate_project_missing",
+      "scripts_validate_project_packagename",
+      "scripts_validate_project_pkg",
+      "scripts_validate_project_players",
+      "scripts_validate_project_required",
+      "scripts_validate_project_root",
+      "scripts_validate_project_sourcefiles",
+      "scripts_validate_project_walk"
+    ],
+    "8": [
+      "src_components_rostercomparemodal",
+      "src_components_rostercomparemodal_deltacolor",
+      "src_components_rostercomparemodal_deltatext",
+      "src_components_rostercomparemodal_roledetail",
+      "src_components_rostercomparemodal_rostercomparemodal",
+      "src_components_rostercomparemodal_rowtone",
+      "src_components_rostercomparemodal_sourceoptions",
+      "src_components_rostercomparemodal_statuschip",
+      "src_utils_rostercompare",
+      "src_utils_rostercompare_catalogindex",
+      "src_utils_rostercompare_comparerosterstates",
+      "src_utils_rostercompare_normalizename",
+      "src_utils_rostercompare_rosterentries"
+    ],
+    "9": [
+      "scripts_aggiorna_quotazioni_download_understat_browser",
+      "scripts_aggiorna_quotazioni_download_understat_html",
+      "scripts_aggiorna_quotazioni_rationale_598",
+      "scripts_aggiorna_quotazioni_rationale_636",
+      "scripts_aggiorna_quotazioni_rationale_717",
+      "scripts_aggiorna_quotazioni_rationale_846",
+      "scripts_aggiorna_quotazioni_understat_find_player_rows_in_json",
+      "scripts_aggiorna_quotazioni_understat_has_payload",
+      "scripts_aggiorna_quotazioni_understat_inject_players",
+      "scripts_aggiorna_quotazioni_understat_is_challenge",
+      "scripts_aggiorna_quotazioni_understat_missing_payload_error",
+      "scripts_aggiorna_quotazioni_understat_rows_from_rendered_html"
+    ],
+    "10": [
+      "scripts_aggiorna_quotazioni_download_advanced_catalogs",
+      "scripts_aggiorna_quotazioni_number_or_text",
+      "scripts_aggiorna_quotazioni_parse_understat_players",
+      "scripts_aggiorna_quotazioni_rationale_1189",
+      "scripts_aggiorna_quotazioni_rationale_1241",
+      "scripts_aggiorna_quotazioni_rationale_697",
+      "scripts_aggiorna_quotazioni_rationale_928",
+      "scripts_aggiorna_quotazioni_understat_catalog",
+      "scripts_aggiorna_quotazioni_understat_catalog_current",
+      "scripts_aggiorna_quotazioni_understat_catalog_from_rows",
+      "scripts_aggiorna_quotazioni_understat_validate_title_season"
+    ],
+    "11": [
+      "scripts_aggiorna_quotazioni_decode_understat_js_literal",
+      "scripts_aggiorna_quotazioni_parse_understat_variable",
+      "scripts_aggiorna_quotazioni_rationale_506",
+      "scripts_aggiorna_quotazioni_rationale_525",
+      "scripts_aggiorna_quotazioni_rationale_557",
+      "scripts_aggiorna_quotazioni_rationale_884",
+      "scripts_aggiorna_quotazioni_scan_balanced_json",
+      "scripts_aggiorna_quotazioni_scan_js_string_literal"
+    ],
+    "12": [
+      "scripts_aggiorna_quotazioni_parse_understat_team_titles",
+      "scripts_aggiorna_quotazioni_rationale_1055",
+      "scripts_aggiorna_quotazioni_rationale_938",
+      "scripts_aggiorna_quotazioni_understat_team_fallback_catalog",
+      "scripts_aggiorna_quotazioni_understat_team_slug",
+      "scripts_aggiorna_quotazioni_understat_year"
+    ]
+  },
+  "cohesion": {
+    "0": 0.12074829931972789,
+    "1": 0.10459183673469388,
+    "2": 0.07142857142857142,
+    "3": 0.2679738562091503,
+    "4": 0.17647058823529413,
+    "5": 0.21904761904761905,
+    "6": 0.2,
+    "7": 0.15384615384615385,
+    "8": 0.3076923076923077,
+    "9": 0.19696969696969696,
+    "10": 0.2,
+    "11": 0.25,
+    "12": 0.3333333333333333
+  },
+  "gods": [
+    {
+      "id": "scripts_aggiorna_quotazioni_updateerror",
+      "label": "UpdateError",
+      "degree": 31
+    },
+    {
+      "id": "scripts_aggiorna_quotazioni_main",
+      "label": "main()",
+      "degree": 20
+    },
+    {
+      "id": "ref_mui_material",
+      "label": "@mui/material",
+      "degree": 15
+    },
+    {
+      "id": "src_utils_common_money",
+      "label": "money()",
+      "degree": 13
+    },
+    {
+      "id": "src_utils_common_clone",
+      "label": "clone()",
+      "degree": 13
+    },
+    {
+      "id": "src_constants_auction_role_order",
+      "label": "ROLE_ORDER",
+      "degree": 12
+    },
+    {
+      "id": "ref_react",
+      "label": "react",
+      "degree": 12
+    },
+    {
+      "id": "scripts_aggiorna_quotazioni_match_player_id",
+      "label": "match_player_id()",
+      "degree": 11
+    },
+    {
+      "id": "src_components_historymodal_historymodal",
+      "label": "HistoryModal()",
+      "degree": 10
+    },
+    {
+      "id": "src_utils_common_uid",
+      "label": "uid()",
+      "degree": 10
+    }
+  ],
+  "surprises": [
+    {
+      "source": "AuctionPanel()",
+      "target": "clone()",
+      "source_files": [
+        "src/components/AuctionPanel.jsx",
+        "src/utils/common.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "ConfigModal()",
+      "target": "clone()",
+      "source_files": [
+        "src/components/ConfigModal.jsx",
+        "src/utils/common.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "App()",
+      "target": "useCatalog()",
+      "source_files": [
+        "src/App.jsx",
+        "src/hooks/useCatalog.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "HistoryModal()",
+      "target": "formatDateTime()",
+      "source_files": [
+        "src/components/HistoryModal.jsx",
+        "src/utils/common.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "RoleDetail()",
+      "target": "money()",
+      "source_files": [
+        "src/components/RosterCompareModal.jsx",
+        "src/utils/common.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `@mui/material` connect `PlayerTable.jsx` to `RosterCompareModal.jsx`, `App.jsx`, `package.json`?",
+      "why": "High betweenness centrality (0.065) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `react` connect `App.jsx` to `PlayerTable.jsx`, `RosterCompareModal.jsx`, `package.json`?",
+      "why": "High betweenness centrality (0.057) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `LABELS`, `columns`, `@emotion/react` to the rest of the system?",
+      "why": "32 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `PlayerTable.jsx` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.12074829931972789 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `App.jsx` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.10459183673469388 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `package.json` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected."
+    }
+  ]
+}
