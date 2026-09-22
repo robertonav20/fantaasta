@@ -1,230 +1,278 @@
 {
-  ".github/hooks/rtk-rewrite.json": {
-    "mtime": 1788701361.834857,
-    "seen": 1788705598.800644,
-    "ast_hash": "edebaacfdf3f2257a00900bff67cbe6f",
-    "semantic_hash": "edebaacfdf3f2257a00900bff67cbe6f"
-  },
   "config.github.json": {
     "mtime": 1788475933.3950264,
-    "seen": 1788705598.800647,
+    "seen": 1790098525.1961708,
     "ast_hash": "416f16b9b794ecef1f1c05bbb8fa0fab",
-    "semantic_hash": "416f16b9b794ecef1f1c05bbb8fa0fab"
+    "semantic_hash": ""
   },
   "package.json": {
     "mtime": 1788475933.395204,
-    "seen": 1788705598.8006485,
+    "seen": 1790098525.196173,
     "ast_hash": "4b0ca35e250db66d9fbdd98d72657f37",
-    "semantic_hash": "4b0ca35e250db66d9fbdd98d72657f37"
+    "semantic_hash": ""
   },
   "scripts/aggiorna_quotazioni.py": {
     "mtime": 1788475933.4036553,
-    "seen": 1788705598.8006492,
+    "seen": 1790098525.1961744,
     "ast_hash": "a4ddf561a0ccd961a516012cb452a75e",
-    "semantic_hash": "a4ddf561a0ccd961a516012cb452a75e"
+    "semantic_hash": ""
+  },
+  "scripts/setup-graphify-lmstudio.sh": {
+    "mtime": 1790098485.3161907,
+    "seen": 1790098525.196175,
+    "ast_hash": "faa7ea1001a3a346957fc32a51dca5ad",
+    "semantic_hash": ""
+  },
+  "scripts/update-graphify-lmstudio.sh": {
+    "mtime": 1790097879.9885206,
+    "seen": 1790098525.1961756,
+    "ast_hash": "a1819bc7f68c5b7db51431af61d0d483",
+    "semantic_hash": ""
   },
   "scripts/validate-project.mjs": {
     "mtime": 1788475933.4036553,
-    "seen": 1788705598.8006496,
+    "seen": 1790098525.196176,
     "ast_hash": "2fcf44166f1326994a3955ef858501ca",
-    "semantic_hash": "2fcf44166f1326994a3955ef858501ca"
+    "semantic_hash": ""
   },
   "src/App.jsx": {
     "mtime": 1788475933.404013,
-    "seen": 1788705598.80065,
+    "seen": 1790098525.196177,
     "ast_hash": "617fa56904b54bf8235482d3abaedfec",
-    "semantic_hash": "617fa56904b54bf8235482d3abaedfec"
+    "semantic_hash": ""
   },
   "src/components/AuctionPanel.jsx": {
     "mtime": 1788475933.4043033,
-    "seen": 1788705598.8006508,
+    "seen": 1790098525.1961775,
     "ast_hash": "8b280fb0324eba696703623519135277",
-    "semantic_hash": "8b280fb0324eba696703623519135277"
+    "semantic_hash": ""
   },
   "src/components/AuctionSummary.jsx": {
     "mtime": 1788475933.404414,
-    "seen": 1788705598.800651,
+    "seen": 1790098525.196178,
     "ast_hash": "db32a6eed88e5253c3bcf185af6a72b6",
-    "semantic_hash": "db32a6eed88e5253c3bcf185af6a72b6"
+    "semantic_hash": ""
   },
   "src/components/AuctionTable.jsx": {
     "mtime": 1788475933.404414,
-    "seen": 1788705598.8006518,
+    "seen": 1790098525.1961784,
     "ast_hash": "c51f583e62c1d83e0799a24acea1ba79",
-    "semantic_hash": "c51f583e62c1d83e0799a24acea1ba79"
+    "semantic_hash": ""
   },
   "src/components/AuctionTabs.jsx": {
     "mtime": 1788475933.404414,
-    "seen": 1788705598.800652,
+    "seen": 1790098525.1961787,
     "ast_hash": "42906eb06e07cd4b2afbe659d780938f",
-    "semantic_hash": "42906eb06e07cd4b2afbe659d780938f"
+    "semantic_hash": ""
   },
   "src/components/ConfigModal.jsx": {
     "mtime": 1788475933.404414,
-    "seen": 1788705598.8006525,
+    "seen": 1790098525.1961794,
     "ast_hash": "8ebfcc8015d2b1585f9c37a5797ef2a4",
-    "semantic_hash": "8ebfcc8015d2b1585f9c37a5797ef2a4"
+    "semantic_hash": ""
   },
   "src/components/HistoryModal.jsx": {
     "mtime": 1788475933.404414,
-    "seen": 1788705598.800653,
+    "seen": 1790098525.1961796,
     "ast_hash": "f5ee8dab94c1fe68bf251bd42f154a26",
-    "semantic_hash": "f5ee8dab94c1fe68bf251bd42f154a26"
+    "semantic_hash": ""
   },
   "src/components/MainNavigation.jsx": {
     "mtime": 1788475933.404414,
-    "seen": 1788705598.8006535,
+    "seen": 1790098525.19618,
     "ast_hash": "68f28532783b2f35e280887c4802d2dd",
-    "semantic_hash": "68f28532783b2f35e280887c4802d2dd"
+    "semantic_hash": ""
   },
   "src/components/PlayerModal.jsx": {
     "mtime": 1788475933.404414,
-    "seen": 1788705598.800654,
+    "seen": 1790098525.1961808,
     "ast_hash": "6963f7e13fce34af4d8f51790536677c",
-    "semantic_hash": "6963f7e13fce34af4d8f51790536677c"
+    "semantic_hash": ""
   },
   "src/components/PlayerTable.jsx": {
     "mtime": 1788478215.9527965,
-    "seen": 1788705598.8006544,
+    "seen": 1790098525.1961815,
     "ast_hash": "96a378111fa18a1d6dd86df748518dbc",
-    "semantic_hash": "96a378111fa18a1d6dd86df748518dbc"
+    "semantic_hash": ""
   },
   "src/components/RoleBadge.jsx": {
     "mtime": 1788475933.4047413,
-    "seen": 1788705598.8006546,
+    "seen": 1790098525.196182,
     "ast_hash": "40c05f8dbadd03829b8c129e83abc185",
-    "semantic_hash": "40c05f8dbadd03829b8c129e83abc185"
+    "semantic_hash": ""
   },
   "src/components/RosterCompareModal.jsx": {
     "mtime": 1788475933.4047413,
-    "seen": 1788705598.8006551,
+    "seen": 1790098525.1961825,
     "ast_hash": "5a7b75976dc246fe5b33436743e4a6c7",
-    "semantic_hash": "5a7b75976dc246fe5b33436743e4a6c7"
+    "semantic_hash": ""
   },
   "src/constants/auction.js": {
     "mtime": 1788475933.4051404,
-    "seen": 1788705598.8006554,
+    "seen": 1790098525.1961832,
     "ast_hash": "645219a367e03e9fbc6d025a10b2d813",
-    "semantic_hash": "645219a367e03e9fbc6d025a10b2d813"
+    "semantic_hash": ""
   },
   "src/constants/index.js": {
     "mtime": 1788475933.4051766,
-    "seen": 1788705598.8006558,
+    "seen": 1790098525.196184,
     "ast_hash": "9598f6c36f0181dd5ab9c66395c2c006",
-    "semantic_hash": "9598f6c36f0181dd5ab9c66395c2c006"
+    "semantic_hash": ""
   },
   "src/constants/project.js": {
     "mtime": 1788475933.4051766,
-    "seen": 1788705598.8006563,
+    "seen": 1790098525.1961844,
     "ast_hash": "b032d0d920066c3b617ba52a6733cc1c",
-    "semantic_hash": "b032d0d920066c3b617ba52a6733cc1c"
+    "semantic_hash": ""
   },
   "src/constants/storage.js": {
     "mtime": 1788475933.4051766,
-    "seen": 1788705598.8006568,
+    "seen": 1790098525.1961849,
     "ast_hash": "4b68583ecd4c560be5c0f02b345a834f",
-    "semantic_hash": "4b68583ecd4c560be5c0f02b345a834f"
+    "semantic_hash": ""
   },
   "src/hooks/useAuctionWorkspace.js": {
     "mtime": 1788475933.4051766,
-    "seen": 1788705598.8006575,
+    "seen": 1790098525.1961854,
     "ast_hash": "e80abed3d98c73b87bc7c0df5f13a675",
-    "semantic_hash": "e80abed3d98c73b87bc7c0df5f13a675"
+    "semantic_hash": ""
   },
   "src/hooks/useCatalog.js": {
     "mtime": 1788475933.4056349,
-    "seen": 1788705598.800658,
+    "seen": 1790098525.1961858,
     "ast_hash": "2209617e91809e6a6fb2aeffe6818093",
-    "semantic_hash": "2209617e91809e6a6fb2aeffe6818093"
+    "semantic_hash": ""
   },
   "src/hooks/useRosterHistory.js": {
     "mtime": 1788475933.4056349,
-    "seen": 1788705598.8006585,
+    "seen": 1790098525.1961863,
     "ast_hash": "ef26b4a404f15e8d96a4fac6a5338e1b",
-    "semantic_hash": "ef26b4a404f15e8d96a4fac6a5338e1b"
+    "semantic_hash": ""
   },
   "src/main.jsx": {
     "mtime": 1788475933.4056349,
-    "seen": 1788705598.8006587,
+    "seen": 1790098525.1961868,
     "ast_hash": "f1a8a64d1dbabc2a9931591fcbf27bdd",
-    "semantic_hash": "f1a8a64d1dbabc2a9931591fcbf27bdd"
+    "semantic_hash": ""
   },
   "src/pages/AuctionsPage.jsx": {
     "mtime": 1788475933.4059927,
-    "seen": 1788705598.800659,
+    "seen": 1790098525.1961875,
     "ast_hash": "766ab1c0734132de15e18144b7f2db3b",
-    "semantic_hash": "766ab1c0734132de15e18144b7f2db3b"
+    "semantic_hash": ""
   },
   "src/pages/PlayersPage.jsx": {
     "mtime": 1788475933.4060528,
-    "seen": 1788705598.8006594,
+    "seen": 1790098525.1961882,
     "ast_hash": "601c7e4ba82c614ebe20fdd3daeaafa7",
-    "semantic_hash": "601c7e4ba82c614ebe20fdd3daeaafa7"
+    "semantic_hash": ""
   },
   "src/services/players.js": {
     "mtime": 1788475933.4060528,
-    "seen": 1788705598.80066,
+    "seen": 1790098525.1961887,
     "ast_hash": "cff8947d4d64d8bad706916432ba5e46",
-    "semantic_hash": "cff8947d4d64d8bad706916432ba5e46"
+    "semantic_hash": ""
   },
   "src/services/storage.js": {
     "mtime": 1788475933.4064207,
-    "seen": 1788705598.8006604,
+    "seen": 1790098525.1961892,
     "ast_hash": "6259115da66c51891b809da1ed6b9626",
-    "semantic_hash": "6259115da66c51891b809da1ed6b9626"
+    "semantic_hash": ""
   },
   "src/theme.js": {
     "mtime": 1788475933.4064207,
-    "seen": 1788705598.800661,
+    "seen": 1790098525.1961894,
     "ast_hash": "fc7e7239f47555b1a3c0593c9e5041e4",
-    "semantic_hash": "fc7e7239f47555b1a3c0593c9e5041e4"
+    "semantic_hash": ""
   },
   "src/utils/auction.js": {
     "mtime": 1788475933.4064207,
-    "seen": 1788705598.8006616,
+    "seen": 1790098525.19619,
     "ast_hash": "5f96d9f839c6524337b2686feb4c5991",
-    "semantic_hash": "5f96d9f839c6524337b2686feb4c5991"
+    "semantic_hash": ""
   },
   "src/utils/budget.js": {
     "mtime": 1788475933.4068441,
-    "seen": 1788705598.800662,
+    "seen": 1790098525.1961908,
     "ast_hash": "c44fbaf242491b456b87e3bf1ea29980",
-    "semantic_hash": "c44fbaf242491b456b87e3bf1ea29980"
+    "semantic_hash": ""
   },
   "src/utils/common.js": {
     "mtime": 1788475933.4068441,
-    "seen": 1788705598.8006625,
+    "seen": 1790098525.1961915,
     "ast_hash": "d9594cc669e626831dbbcab42e6512a4",
-    "semantic_hash": "d9594cc669e626831dbbcab42e6512a4"
+    "semantic_hash": ""
   },
   "src/utils/exportImport.js": {
     "mtime": 1788475933.4068441,
-    "seen": 1788705598.800663,
+    "seen": 1790098525.196192,
     "ast_hash": "aa511c7d24bdbd2e1ad2b182ba534a96",
-    "semantic_hash": "aa511c7d24bdbd2e1ad2b182ba534a96"
+    "semantic_hash": ""
   },
   "src/utils/index.js": {
     "mtime": 1788475933.4068441,
-    "seen": 1788705598.8006632,
+    "seen": 1790098525.1961925,
     "ast_hash": "169120bf908ddfb2a4937f7401df77e6",
-    "semantic_hash": "169120bf908ddfb2a4937f7401df77e6"
+    "semantic_hash": ""
   },
   "src/utils/playerUtils.js": {
     "mtime": 1788475933.4068441,
-    "seen": 1788705598.8006637,
+    "seen": 1790098525.196193,
     "ast_hash": "74dc27b77f9c35af1db108509114e09e",
-    "semantic_hash": "74dc27b77f9c35af1db108509114e09e"
+    "semantic_hash": ""
   },
   "src/utils/rosterCompare.js": {
     "mtime": 1788475933.4068441,
-    "seen": 1788705598.800664,
+    "seen": 1790098525.1961932,
     "ast_hash": "87932b8b80a46de412eddd8e86e033a2",
-    "semantic_hash": "87932b8b80a46de412eddd8e86e033a2"
+    "semantic_hash": ""
   },
   "vite.config.js": {
     "mtime": 1788475933.4070487,
-    "seen": 1788705598.8006647,
+    "seen": 1790098525.1961937,
     "ast_hash": "9b54b15a12cfbcd61b7a14d80bc08351",
-    "semantic_hash": "9b54b15a12cfbcd61b7a14d80bc08351"
+    "semantic_hash": ""
+  },
+  ".github/copilot-instructions.md": {
+    "mtime": 1790097668.716742,
+    "seen": 1790098525.1961946,
+    "ast_hash": "ff026c6f53eb6226d58e68dc3cd2f0fe",
+    "semantic_hash": ""
+  },
+  ".github/workflows/deploy.yml": {
+    "mtime": 1788475933.3947358,
+    "seen": 1790098525.1961951,
+    "ast_hash": "5001874f66a52384498a1a218472d1f4",
+    "semantic_hash": ""
+  },
+  ".github/workflows/update.yml": {
+    "mtime": 1788475933.3947358,
+    "seen": 1790098525.1961956,
+    "ast_hash": "c7bf1461678c0e686c3999c95e555eb7",
+    "semantic_hash": ""
+  },
+  "PROJECT_VERSION.txt": {
+    "mtime": 1788475933.3947358,
+    "seen": 1790098525.196196,
+    "ast_hash": "34f648e096bcddb91716798229e330df",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1789515248.8554006,
+    "seen": 1790098525.1961973,
+    "ast_hash": "b1cb83cd1bcd6a9a52f3128011c887a5",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1788475933.395204,
+    "seen": 1790098525.196198,
+    "ast_hash": "ab7e35c4670c959f3d10023283f6aa8e",
+    "semantic_hash": ""
+  },
+  "requirements.txt": {
+    "mtime": 1786885858.0130408,
+    "seen": 1790098525.1961985,
+    "ast_hash": "c422059461ed2993a5e17767bd8c166a",
+    "semantic_hash": ""
   }
 }

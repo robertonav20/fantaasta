@@ -58,6 +58,19 @@ SPA React + Material UI per consultare il catalogo Fantacalcio e gestire più as
 └── vite.config.js
 ```
 
+## Graphify Integration with LM Studio
+
+This project supports integration with LM Studio for knowledge graph generation through the Graphify tool. To configure this:
+
+1. Ensure LM Studio is running locally at `http://localhost:1234/v1`
+2. Load your preferred model (e.g., llama3:7b)
+3. Run the setup script to configure Graphify:
+   ```bash
+   ./scripts/setup-graphify-lmstudio.sh
+   ```
+
+The configuration allows Graphify to leverage local LLM capabilities for semantic analysis and knowledge graph generation.
+
 ## Frontend
 
 Requisito: Node.js 22.12+.

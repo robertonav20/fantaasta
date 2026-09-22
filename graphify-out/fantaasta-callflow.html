@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>fantaasta — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>fantaasta — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 281 nodes, 710 edges, 18 communities. Commit: cde07a3</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#build-graph">Graph Build</a>
+    <a href="#cli-skills">CLI &amp; Skill Installers</a>
+    <a href="#ingest-cache-update">Ingestion &amp; Updates</a>
+    <a href="#match-player-id">match_player_id</a>
+    <a href="#validate-project-mjs">validate-project.mjs</a>
+    <a href="#exportimport-js">exportImport.js</a>
+    <a href="#fantacalcio-asta">Fantacalcio Asta</a>
+    <a href="#setup-graphify-lmstudio-sh">setup-graphify-lmstudio.sh</a>
+    <a href="#rostercompare-js">rosterCompare.js</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>152 nodes</small>")
+    class BUILD_GRAPH_321CBB04 module;
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>31 nodes</small>")
+    class CLI_SKILLS_9964CBB8 module;
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>35 nodes</small>")
+    class INGEST_CACHE_UPDATE_FF457338 module;
+    MATCH_PLAYER_ID_091D2B29("match_player_id<br/><small>18 nodes</small>")
+    class MATCH_PLAYER_ID_091D2B29 module;
+    VALIDATE_PROJECT_MJS_4590B022("validate-project.mjs<br/><small>13 nodes</small>")
+    class VALIDATE_PROJECT_MJS_4590B022 module;
+    EXPORTIMPORT_JS_619E36DD("exportImport.js<br/><small>11 nodes</small>")
+    class EXPORTIMPORT_JS_619E36DD module;
+    FANTACALCIO_ASTA_2AF43CDE("Fantacalcio Asta<br/><small>11 nodes</small>")
+    class FANTACALCIO_ASTA_2AF43CDE module;
+    SETUP_GRAPHIFY_LMSTUDIO_SH_77F2BCAF("setup-graphify-lmstudio.sh<br/><small>5 nodes</small>")
+    class SETUP_GRAPHIFY_LMSTUDIO_SH_77F2BCAF module;
+    ROSTERCOMPARE_JS_553AD56F("rosterCompare.js<br/><small>5 nodes</small>")
+    class ROSTERCOMPARE_JS_553AD56F module;
+    BUILD_GRAPH_321CBB04 -->|references x50| INGEST_CACHE_UPDATE_FF457338
+    CLI_SKILLS_9964CBB8 -->|imports x24| BUILD_GRAPH_321CBB04
+    INGEST_CACHE_UPDATE_FF457338 -->|calls x16| BUILD_GRAPH_321CBB04
+    BUILD_GRAPH_321CBB04 -->|contains x16| MATCH_PLAYER_ID_091D2B29
+    EXPORTIMPORT_JS_619E36DD -->|imports x10| BUILD_GRAPH_321CBB04
+    BUILD_GRAPH_321CBB04 -->|contains x7| CLI_SKILLS_9964CBB8
+    MATCH_PLAYER_ID_091D2B29 -->|references x7| INGEST_CACHE_UPDATE_FF457338
+    EXPORTIMPORT_JS_619E36DD -->|imports x5| CLI_SKILLS_9964CBB8
+    BUILD_GRAPH_321CBB04 -->|contains x5| EXPORTIMPORT_JS_619E36DD
+    BUILD_GRAPH_321CBB04 -->|calls x3| ROSTERCOMPARE_JS_553AD56F
+    MATCH_PLAYER_ID_091D2B29 -->|calls x3| BUILD_GRAPH_321CBB04
+    INGEST_CACHE_UPDATE_FF457338 -->|calls x2| MATCH_PLAYER_ID_091D2B29
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Graph Build</td><td>152</td><td><code>0, 1, 3, 5, 6, 17</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>31</td><td><code>2, 16</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>35</td><td><code>9, 11, 12, 14</code></td></tr><tr><td>match_player_id</td><td>18</td><td><code>4</code></td></tr><tr><td>validate-project.mjs</td><td>13</td><td><code>7</code></td></tr><tr><td>exportImport.js</td><td>11</td><td><code>10</code></td></tr><tr><td>Fantacalcio Asta</td><td>11</td><td><code>8</code></td></tr><tr><td>setup-graphify-lmstudio.sh</td><td>5</td><td><code>13</code></td></tr><tr><td>rosterCompare.js</td><td>5</td><td><code>15</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">validate-project.mjs -&gt; Graph Build -&gt; Ingestion &amp; Updates -&gt; match_player_id -&gt; CLI &amp; Skill Installers -&gt; exportImport.js -&gt; Fantacalcio Asta</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h4>Graph Report Highlights</h4>
+    <ul>
+      <li>281 nodes · 710 edges · 18 communities (17 shown, 1 thin omitted)</li>
+      <li>Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.85)</li>
+      <li>Token cost: 0 input · 0 output</li>
+      <li>1. `UpdateError` - 31 edges</li>
+      <li>2. `main()` - 19 edges</li>
+      <li>3. `@mui/material` - 15 edges</li>
+    </ul>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Graph Build ====== -->
+<h2 id="build-graph">2. Graph Build</h2>
+<p>Graph Build groups implementation around scripts, aggiorna, quotazionipy, components, mostly in scripts/aggiorna_quotazioni.py, package.json, src/constants/auction.js. This section covers 152 nodes and 365 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Graph Build (152 nodes, 365 edges)
+    subgraph build_graph_src_components_AuctionSummary_jsx_c7ca2475["src/components/AuctionSummary.jsx"]
+        src_components_auctionsummary_5b75df44("AuctionSummary.jsx")
+        src_components_auctionsummary_auctionsummary_8fb288b3("AuctionSummary()<br/><small>src/components/AuctionSummary.jsx</small>")
+        src_components_auctionsummary_rolesummary_710fd863("RoleSummary()<br/><small>src/components/AuctionSummary.jsx</small>")
+    end
+    subgraph build_graph_src_components_AuctionTable_jsx_75d676ec["src/components/AuctionTable.jsx"]
+        src_components_auctiontable_81bc8e05("AuctionTable.jsx")
+        src_components_auctiontable_auctiontable_d274119f("AuctionTable()<br/><small>src/components/AuctionTable.jsx</small>")
+        src_components_auctiontable_actualtone_93c2ae3d("actualTone()<br/><small>src/components/AuctionTable.jsx</small>")
+    end
+    subgraph build_graph_src_utils_common_js_3cdf31af["src/utils/common.js"]
+        src_utils_common_clone_5af17e31("clone()<br/><small>src/utils/common.js</small>")
+        src_utils_common_normalizetext_b1de8470("normalizeText()<br/><small>src/utils/common.js</small>")
+        src_utils_common_money_c6bd6b1f("money()<br/><small>src/utils/common.js</small>")
+    end
+    subgraph build_graph_src_components_AuctionPanel_jsx_8a25b51c["src/components/AuctionPanel.jsx"]
+        src_components_auctionpanel_4160e4cb("AuctionPanel.jsx")
+        src_components_auctionpanel_auctionpanel_a05c0faa("AuctionPanel()<br/><small>src/components/AuctionPanel.jsx</small>")
+    end
+    subgraph build_graph_src_components_ConfigModal_jsx_3a484eb6["src/components/ConfigModal.jsx"]
+        src_components_configmodal_4998f09f("ConfigModal.jsx")
+        src_components_configmodal_configmodal_90232b67("ConfigModal()<br/><small>src/components/ConfigModal.jsx</small>")
+    end
+    scripts_aggiorna_quotazioni_main_d1583651("main()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    src_components_playermodal_display_96521aa1("display()<br/><small>src/components/PlayerModal.jsx</small>")
+    src_components_playertable_6ae119ef("PlayerTable.jsx")
+    src_utils_budget_estimate_1d5efbf4("estimate()<br/><small>src/utils/budget.js</small>")
+    src_utils_playerutils_selectedplayer_c5347361("selectedPlayer()<br/><small>src/utils/playerUtils.js</small>")
+    src_components_auctionpanel_auctionpanel_a05c0faa -->|calls| src_utils_common_clone_5af17e31
+    src_components_auctionpanel_auctionpanel_a05c0faa -->|calls| src_utils_budget_estimate_1d5efbf4
+    src_components_auctionpanel_auctionpanel_a05c0faa -->|calls| src_utils_playerutils_selectedplayer_c5347361
+    src_components_auctionpanel_auctionpanel_a05c0faa -->|calls| src_utils_common_normalizetext_b1de8470
+    src_components_auctionsummary_auctionsummary_8fb288b3 -->|calls| src_utils_common_money_c6bd6b1f
+    src_components_auctionsummary_rolesummary_710fd863 -->|calls| src_utils_playerutils_selectedplayer_c5347361
+    src_components_auctionsummary_rolesummary_710fd863 -->|calls| src_utils_common_money_c6bd6b1f
+    src_components_auctionsummary_rolesummary_710fd863 -->|calls| src_utils_budget_estimate_1d5efbf4
+    src_components_auctiontable_auctiontable_d274119f -->|calls| src_utils_playerutils_selectedplayer_c5347361
+    src_components_auctiontable_auctiontable_d274119f -->|calls| src_utils_budget_estimate_1d5efbf4
+    src_components_auctiontable_auctiontable_d274119f -->|calls| src_utils_common_money_c6bd6b1f
+    src_components_auctiontable_auctiontable_d274119f -->|calls| src_components_auctiontable_actualtone_93c2ae3d
+    src_components_configmodal_configmodal_90232b67 -->|calls| src_utils_common_money_c6bd6b1f
+    src_components_configmodal_configmodal_90232b67 -->|calls| src_utils_common_clone_5af17e31
+    src_utils_playerutils_selectedplayer_c5347361 -->|calls| src_utils_common_normalizetext_b1de8470
+    src_components_auctionpanel_4160e4cb -->|imports| src_components_configmodal_configmodal_90232b67
+    src_components_auctionpanel_4160e4cb -->|imports| src_utils_budget_estimate_1d5efbf4
+    src_components_auctionpanel_4160e4cb -->|imports| src_utils_common_clone_5af17e31
+    src_components_auctionpanel_4160e4cb -->|imports| src_utils_common_normalizetext_b1de8470
+    src_components_auctionpanel_4160e4cb -->|imports| src_utils_playerutils_selectedplayer_c5347361
+    src_components_auctionpanel_4160e4cb -->|imports| src_components_auctionsummary_auctionsummary_8fb288b3
+    src_components_auctionpanel_4160e4cb -->|imports| src_components_auctiontable_auctiontable_d274119f
+    src_components_auctionpanel_4160e4cb -->|imports| src_components_configmodal_4998f09f
+    src_components_auctionpanel_4160e4cb -->|imports| src_components_auctionsummary_5b75df44
+    %% Omitted for readability: 134 nodes, 11 edges
+    class src_components_auctionsummary_5b75df44 ui;
+    class src_components_auctionsummary_auctionsummary_8fb288b3 ui;
+    class src_components_auctionsummary_rolesummary_710fd863 ui;
+    class src_components_auctiontable_81bc8e05 ui;
+    class src_components_auctiontable_auctiontable_d274119f ui;
+    class src_components_auctiontable_actualtone_93c2ae3d ui;
+    class src_utils_common_clone_5af17e31 function;
+    class src_utils_common_normalizetext_b1de8470 function;
+    class src_utils_common_money_c6bd6b1f function;
+    class src_components_auctionpanel_4160e4cb ui;
+    class src_components_auctionpanel_auctionpanel_a05c0faa ui;
+    class src_components_configmodal_4998f09f ui;
+    class src_components_configmodal_configmodal_90232b67 ui;
+    class scripts_aggiorna_quotazioni_main_d1583651 function;
+    class src_components_playermodal_display_96521aa1 ui;
+    class src_components_playertable_6ae119ef ui;
+    class src_utils_budget_estimate_1d5efbf4 function;
+    class src_utils_playerutils_selectedplayer_c5347361 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>AuctionPanel()</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionsPage.jsx</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small></td>
+  <td><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>estimate()</code><br><small style="color:var(--muted)">src/utils/budget.js</small><br><code>normalizeText()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br>+1 more</td>
+  <td>AuctionPanel() node in src/components/AuctionPanel.jsx.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>AuctionSummary()</code><br><small style="color:var(--muted)">src/components/AuctionSummary.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionPanel.jsx</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small></td>
+  <td><code>money()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>AuctionSummary() node in src/components/AuctionSummary.jsx.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>RoleSummary()</code><br><small style="color:var(--muted)">src/components/AuctionSummary.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>estimate()</code><br><small style="color:var(--muted)">src/utils/budget.js</small><br><code>money()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>selectedPlayer()</code><br><small style="color:var(--muted)">src/utils/playerUtils.js</small></td>
+  <td>RoleSummary() node in src/components/AuctionSummary.jsx.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>actualTone()</code><br><small style="color:var(--muted)">src/components/AuctionTable.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionTable()</code><br><small style="color:var(--muted)">src/components/AuctionTable.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>actualTone() node in src/components/AuctionTable.jsx.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>AuctionTable()</code><br><small style="color:var(--muted)">src/components/AuctionTable.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionPanel.jsx</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small></td>
+  <td><code>actualTone()</code><br><small style="color:var(--muted)">src/components/AuctionTable.jsx</small><br><code>estimate()</code><br><small style="color:var(--muted)">src/utils/budget.js</small><br><code>money()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br>+1 more</td>
+  <td>AuctionTable() node in src/components/AuctionTable.jsx.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>AuctionTabs()</code><br><small style="color:var(--muted)">src/components/AuctionTabs.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionsPage.jsx</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>AuctionTabs() node in src/components/AuctionTabs.jsx.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>ConfigModal()</code><br><small style="color:var(--muted)">src/components/ConfigModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionPanel.jsx</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small></td>
+  <td><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>money()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>display()</code><br><small style="color:var(--muted)">src/components/PlayerModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>InfoGrid()</code><br><small style="color:var(--muted)">src/components/PlayerModal.jsx</small></td>
+  <td><code>formatDateTime()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>number()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>display() node in src/components/PlayerModal.jsx.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>InfoGrid()</code><br><small style="color:var(--muted)">src/components/PlayerModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>display()</code><br><small style="color:var(--muted)">src/components/PlayerModal.jsx</small></td>
+  <td>InfoGrid() node in src/components/PlayerModal.jsx.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>PlayerModal()</code><br><small style="color:var(--muted)">src/components/PlayerModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionPanel.jsx</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small><br><code>PlayerTable.jsx</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>PlayerModal() node in src/components/PlayerModal.jsx.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Section()</code><br><small style="color:var(--muted)">src/components/PlayerModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Section() node in src/components/PlayerModal.jsx.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>InjuryStatusChip()</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>InjuryStatusChip() node in src/components/PlayerTable.jsx.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>PlayerTable()</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>PlayersPage.jsx</code><br><small style="color:var(--muted)">src/pages/PlayersPage.jsx</small></td>
+  <td><code>formatDateTime()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>money()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>normalizeText()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br>+3 more</td>
+  <td>PlayerTable() node in src/components/PlayerTable.jsx.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>probabilityChip()</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>PlayerTable()</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>probabilityChip() node in src/components/PlayerTable.jsx.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>statFor()</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>PlayerTable()</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>statFor() node in src/components/PlayerTable.jsx.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>RoleBadge()</code><br><small style="color:var(--muted)">src/components/RoleBadge.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionSummary.jsx</code><br><small style="color:var(--muted)">src/components/AuctionSummary.jsx</small><br><code>AuctionTable.jsx</code><br><small style="color:var(--muted)">src/components/AuctionTable.jsx</small><br><code>ConfigModal.jsx</code><br><small style="color:var(--muted)">src/components/ConfigModal.jsx</small><br>+3 more</td>
+  <td>No direct outbound edge</td>
+  <td>RoleBadge() node in src/components/RoleBadge.jsx.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>deltaColor()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>RoleDetail()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small><br><code>RosterCompareModal()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>deltaColor() node in src/components/RosterCompareModal.jsx.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>deltaText()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>RoleDetail()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small><br><code>RosterCompareModal()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>deltaText() node in src/components/RosterCompareModal.jsx.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>RoleDetail()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>deltaColor()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small><br><code>deltaText()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small><br><code>money()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br>+2 more</td>
+  <td>RoleDetail() node in src/components/RosterCompareModal.jsx.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>RosterCompareModal()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionsPage.jsx</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small></td>
+  <td><code>compareRosterStates()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small><br><code>deltaColor()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small><br><code>deltaText()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small><br>+2 more</td>
+  <td>RosterCompareModal() node in src/components/RosterCompareModal.jsx.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>rowTone()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>RoleDetail()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>rowTone() node in src/components/RosterCompareModal.jsx.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>sourceOptions()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>RosterCompareModal()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>sourceOptions() node in src/components/RosterCompareModal.jsx.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>statusChip()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>RoleDetail()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>statusChip() node in src/components/RosterCompareModal.jsx.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>useCatalog()</code><br><small style="color:var(--muted)">src/hooks/useCatalog.js</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.jsx</small><br><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><code>fetchCatalog()</code><br><small style="color:var(--muted)">src/services/players.js</small><br><code>formatDateTime()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>useCatalog() node in src/hooks/useCatalog.js.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>AuctionsPage()</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>uid()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>fetchCatalog()</code><br><small style="color:var(--muted)">src/services/players.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>useCatalog()</code><br><small style="color:var(--muted)">src/hooks/useCatalog.js</small><br><code>useCatalog.js</code><br><small style="color:var(--muted)">src/hooks/useCatalog.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>fetchCatalog() node in src/services/players.js.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>blankSlot()</code><br><small style="color:var(--muted)">src/utils/auction.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>blankSlot() node in src/utils/auction.js.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>estimate()</code><br><small style="color:var(--muted)">src/utils/budget.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AuctionPanel()</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small><br><code>AuctionPanel.jsx</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small><br><code>AuctionSummary.jsx</code><br><small style="color:var(--muted)">src/components/AuctionSummary.jsx</small><br>+3 more</td>
+  <td>No direct outbound edge</td>
+  <td>estimate() node in src/utils/budget.js.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>auction.js</code><br><small style="color:var(--muted)">src/utils/auction.js</small><br><code>AuctionPanel()</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small><br><code>AuctionPanel.jsx</code><br><small style="color:var(--muted)">src/components/AuctionPanel.jsx</small><br>+9 more</td>
+  <td>No direct outbound edge</td>
+  <td>Turns a local path or remote repository into analysis context.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>formatDateTime()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>display()</code><br><small style="color:var(--muted)">src/components/PlayerModal.jsx</small><br><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br>+5 more</td>
+  <td>No direct outbound edge</td>
+  <td>formatDateTime() node in src/utils/common.js.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>scripts/aggiorna_quotazioni.py</code></td><td>53 nodes</td></tr>
+<tr><td><code>package.json</code></td><td>30 nodes</td></tr>
+<tr><td><code>src/constants/auction.js</code></td><td>10 nodes</td></tr>
+<tr><td><code>src/components/RosterCompareModal.jsx</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/components/PlayerModal.jsx</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/components/PlayerTable.jsx</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/utils/common.js</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/components/AuctionSummary.jsx</code></td><td>3 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x105, calls x99, imports x76, imports x55. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. CLI & Skill Installers ====== -->
+<h2 id="cli-skills">3. CLI &amp; Skill Installers</h2>
+<p>CLI &amp; Skill Installers groups implementation around storagejs, services, constants, copilot, mostly in src/services/storage.js, src/constants/storage.js, .github/copilot-instructions.md. This section covers 31 nodes and 61 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: CLI &amp; Skill Installers (31 nodes, 61 edges)
+    subgraph cli_skills_src_services_storage_js_7cbbc83d["src/services/storage.js"]
+        src_services_storage_00877c21("storage.js")
+        src_services_storage_loadworkspace_eab518fe("loadWorkspace()<br/><small>src/services/storage.js</small>")
+        src_services_storage_saveworkspace_1f07886a("saveWorkspace()<br/><small>src/services/storage.js</small>")
+        src_services_storage_createblankauction_eaee5602("createBlankAuction()<br/><small>src/services/storage.js</small>")
+        src_services_storage_savehistory_357b704f("saveHistory()<br/><small>src/services/storage.js</small>")
+        src_services_storage_loadhistory_955c70a4("loadHistory()<br/><small>src/services/storage.js</small>")
+        src_services_storage_readjson_f3562e4a("readJson()<br/><small>src/services/storage.js</small>")
+    end
+    subgraph cli_skills_src_App_jsx_215f65e2["src/App.jsx"]
+        src_app_46efd68e("App.jsx")
+        src_app_app_f316b20d("App()<br/><small>src/App.jsx</small>")
+    end
+    subgraph cli_skills_src_hooks_useAuctionWorkspace_js_67a9662e["src/hooks/useAuctionWorkspace.js"]
+        src_hooks_useauctionworkspace_78ee0124("useAuctionWorkspace.js")
+        src_hooks_useauctionworkspace_useauctionworkspac_730c2371("useAuctionWorkspace()<br/><small>src/hooks/useAuctionWorkspace.js</small>")
+    end
+    subgraph cli_skills_src_utils_auction_js_c33226c4["src/utils/auction.js"]
+        src_utils_auction_normalizeauctionstate_c5e53367("normalizeAuctionState()<br/><small>src/utils/auction.js</small>")
+        src_utils_auction_createblankauctionstate_3299af13("createBlankAuctionState()<br/><small>src/utils/auction.js</small>")
+    end
+    src_components_mainnavigation_mainnavigation_80383057("MainNavigation()<br/><small>src/components/MainNavigation.jsx</small>")
+    src_hooks_userosterhistory_userosterhistory_1f32f799("useRosterHistory()<br/><small>src/hooks/useRosterHistory.js</small>")
+    src_main_3231ff52("main.jsx")
+    src_pages_playerspage_playerspage_7855d61b("PlayersPage()<br/><small>src/pages/PlayersPage.jsx</small>")
+    src_utils_common_uid_02bedef2("uid()<br/><small>src/utils/common.js</small>")
+    src_app_app_f316b20d -->|calls| src_hooks_useauctionworkspace_useauctionworkspac_730c2371
+    src_app_app_f316b20d -->|calls| src_hooks_userosterhistory_userosterhistory_1f32f799
+    src_hooks_useauctionworkspace_useauctionworkspac_730c2371 -->|calls| src_utils_common_uid_02bedef2
+    src_hooks_useauctionworkspace_useauctionworkspac_730c2371 -->|calls| src_services_storage_saveworkspace_1f07886a
+    src_hooks_useauctionworkspace_useauctionworkspac_730c2371 -->|calls| src_utils_auction_normalizeauctionstate_c5e53367
+    src_hooks_useauctionworkspace_useauctionworkspac_730c2371 -->|calls| src_services_storage_loadworkspace_eab518fe
+    src_hooks_useauctionworkspace_useauctionworkspac_730c2371 -->|calls| src_services_storage_createblankauction_eaee5602
+    src_hooks_userosterhistory_userosterhistory_1f32f799 -->|calls| src_services_storage_savehistory_357b704f
+    src_hooks_userosterhistory_userosterhistory_1f32f799 -->|calls| src_services_storage_loadhistory_955c70a4
+    src_services_storage_createblankauction_eaee5602 -->|calls| src_utils_auction_createblankauctionstate_3299af13
+    src_services_storage_createblankauction_eaee5602 -->|calls| src_utils_common_uid_02bedef2
+    src_services_storage_loadhistory_955c70a4 -->|calls| src_services_storage_readjson_f3562e4a
+    src_services_storage_loadworkspace_eab518fe -->|calls| src_services_storage_readjson_f3562e4a
+    src_services_storage_loadworkspace_eab518fe -->|calls| src_utils_common_uid_02bedef2
+    src_services_storage_loadworkspace_eab518fe -->|calls| src_utils_auction_normalizeauctionstate_c5e53367
+    src_services_storage_loadworkspace_eab518fe -->|calls| src_services_storage_loadhistory_955c70a4
+    src_utils_auction_createblankauctionstate_3299af13 -->|calls| src_utils_auction_normalizeauctionstate_c5e53367
+    src_app_46efd68e -->|imports| src_components_mainnavigation_mainnavigation_80383057
+    src_app_46efd68e -->|imports| src_pages_playerspage_playerspage_7855d61b
+    src_app_46efd68e -->|imports| src_hooks_useauctionworkspace_useauctionworkspac_730c2371
+    src_app_46efd68e -->|imports| src_hooks_userosterhistory_userosterhistory_1f32f799
+    src_app_46efd68e -->|imports| src_hooks_useauctionworkspace_78ee0124
+    src_hooks_useauctionworkspace_78ee0124 -->|imports| src_services_storage_createblankauction_eaee5602
+    src_hooks_useauctionworkspace_78ee0124 -->|imports| src_services_storage_loadworkspace_eab518fe
+    %% Omitted for readability: 13 nodes, 9 edges
+    class src_services_storage_00877c21 module;
+    class src_services_storage_loadworkspace_eab518fe function;
+    class src_services_storage_saveworkspace_1f07886a function;
+    class src_services_storage_createblankauction_eaee5602 function;
+    class src_services_storage_savehistory_357b704f function;
+    class src_services_storage_loadhistory_955c70a4 function;
+    class src_services_storage_readjson_f3562e4a function;
+    class src_app_46efd68e ui;
+    class src_app_app_f316b20d ui;
+    class src_hooks_useauctionworkspace_78ee0124 ui;
+    class src_hooks_useauctionworkspace_useauctionworkspac_730c2371 ui;
+    class src_utils_auction_normalizeauctionstate_c5e53367 function;
+    class src_utils_auction_createblankauctionstate_3299af13 function;
+    class src_components_mainnavigation_mainnavigation_80383057 ui;
+    class src_hooks_userosterhistory_userosterhistory_1f32f799 ui;
+    class src_main_3231ff52 ui;
+    class src_pages_playerspage_playerspage_7855d61b ui;
+    class src_utils_common_uid_02bedef2 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>main.jsx</code><br><small style="color:var(--muted)">src/main.jsx</small></td>
+  <td><code>useAuctionWorkspace()</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small><br><code>useCatalog()</code><br><small style="color:var(--muted)">src/hooks/useCatalog.js</small><br><code>useRosterHistory()</code><br><small style="color:var(--muted)">src/hooks/useRosterHistory.js</small></td>
+  <td>App() node in src/App.jsx.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>MainNavigation()</code><br><small style="color:var(--muted)">src/components/MainNavigation.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>MainNavigation() node in src/components/MainNavigation.jsx.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>useAuctionWorkspace()</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.jsx</small><br><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>createBlankAuction()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br><code>loadWorkspace()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br>+3 more</td>
+  <td>useAuctionWorkspace() node in src/hooks/useAuctionWorkspace.js.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>useRosterHistory()</code><br><small style="color:var(--muted)">src/hooks/useRosterHistory.js</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.jsx</small><br><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><code>loadHistory()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br><code>saveHistory()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td>useRosterHistory() node in src/hooks/useRosterHistory.js.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>PlayersPage()</code><br><small style="color:var(--muted)">src/pages/PlayersPage.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>createBlankAuction()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>useAuctionWorkspace()</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small><br><code>useAuctionWorkspace.js</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small></td>
+  <td><code>createBlankAuctionState()</code><br><small style="color:var(--muted)">src/utils/auction.js</small><br><code>uid()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>createBlankAuction() node in src/services/storage.js.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>loadHistory()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>loadWorkspace()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br><code>useRosterHistory()</code><br><small style="color:var(--muted)">src/hooks/useRosterHistory.js</small><br><code>useRosterHistory.js</code><br><small style="color:var(--muted)">src/hooks/useRosterHistory.js</small></td>
+  <td><code>readJson()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td>loadHistory() node in src/services/storage.js.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>loadWorkspace()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>useAuctionWorkspace()</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small><br><code>useAuctionWorkspace.js</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small></td>
+  <td><code>loadHistory()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br><code>normalizeAuctionState()</code><br><small style="color:var(--muted)">src/utils/auction.js</small><br><code>readJson()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br>+1 more</td>
+  <td>loadWorkspace() node in src/services/storage.js.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>readJson()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>loadHistory()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br><code>loadWorkspace()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>readJson() node in src/services/storage.js.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>saveHistory()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>useRosterHistory()</code><br><small style="color:var(--muted)">src/hooks/useRosterHistory.js</small><br><code>useRosterHistory.js</code><br><small style="color:var(--muted)">src/hooks/useRosterHistory.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>saveHistory() node in src/services/storage.js.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>saveWorkspace()</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>useAuctionWorkspace()</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small><br><code>useAuctionWorkspace.js</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>saveWorkspace() node in src/services/storage.js.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>createBlankAuctionState()</code><br><small style="color:var(--muted)">src/utils/auction.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>createBlankAuction()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br><code>storage.js</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td><code>normalizeAuctionState()</code><br><small style="color:var(--muted)">src/utils/auction.js</small></td>
+  <td>createBlankAuctionState() node in src/utils/auction.js.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>normalizeAuctionState()</code><br><small style="color:var(--muted)">src/utils/auction.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>createBlankAuctionState()</code><br><small style="color:var(--muted)">src/utils/auction.js</small><br><code>exportImport.js</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small><br><code>loadWorkspace()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br>+4 more</td>
+  <td><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>normalizeAuctionState() node in src/utils/auction.js.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>uid()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AuctionsPage()</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small><br><code>AuctionsPage.jsx</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small><br><code>createBlankAuction()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br>+6 more</td>
+  <td>No direct outbound edge</td>
+  <td>uid() node in src/utils/common.js.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>main.jsx</code><br><small style="color:var(--muted)">src/main.jsx</small></td>
+  <td><code>@mui/material</code><br><small style="color:var(--muted)">package.json</small><br><code>AuctionsPage()</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small><br><code>AuctionsPage.jsx</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small><br>+13 more</td>
+  <td>App.jsx node in src/App.jsx.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>MainNavigation.jsx</code><br><small style="color:var(--muted)">src/components/MainNavigation.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><code>@mui/material</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td>MainNavigation.jsx node in src/components/MainNavigation.jsx.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>project.js</code><br><small style="color:var(--muted)">src/constants/project.js</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>project.js node in src/constants/project.js.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>PROJECT_VERSION</code><br><small style="color:var(--muted)">src/constants/project.js</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>PROJECT_VERSION node in src/constants/project.js.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>constants/storage.js</code><br><small style="color:var(--muted)">src/constants/storage.js</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>HISTORY_LIMIT</code><br><small style="color:var(--muted)">src/constants/storage.js</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>exportImport.js</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small><br><code>storage.js</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>HISTORY_LIMIT node in src/constants/storage.js.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>STORAGE</code><br><small style="color:var(--muted)">src/constants/storage.js</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>storage.js</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>useAuctionWorkspace.js</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>createBlankAuction()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br><code>index.js</code><br><small style="color:var(--muted)">src/utils/index.js</small><br>+6 more</td>
+  <td>useAuctionWorkspace.js node in src/hooks/useAuctionWorkspace.js.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>useRosterHistory.js</code><br><small style="color:var(--muted)">src/hooks/useRosterHistory.js</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><code>loadHistory()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br><code>react</code><br><small style="color:var(--muted)">package.json</small><br><code>saveHistory()</code><br><small style="color:var(--muted)">src/services/storage.js</small><br>+1 more</td>
+  <td>useRosterHistory.js node in src/hooks/useRosterHistory.js.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>main.jsx</code><br><small style="color:var(--muted)">src/main.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>@mui/material</code><br><small style="color:var(--muted)">package.json</small><br><code>App()</code><br><small style="color:var(--muted)">src/App.jsx</small><br><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small><br>+3 more</td>
+  <td>main.jsx node in src/main.jsx.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>PlayersPage.jsx</code><br><small style="color:var(--muted)">src/pages/PlayersPage.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.jsx</code><br><small style="color:var(--muted)">src/App.jsx</small></td>
+  <td><code>PlayerTable()</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small><br><code>PlayerTable.jsx</code><br><small style="color:var(--muted)">src/components/PlayerTable.jsx</small></td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>services/storage.js</code><br><small style="color:var(--muted)">src/services/storage.js</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>useAuctionWorkspace.js</code><br><small style="color:var(--muted)">src/hooks/useAuctionWorkspace.js</small><br><code>useRosterHistory.js</code><br><small style="color:var(--muted)">src/hooks/useRosterHistory.js</small></td>
+  <td><code>auction.js</code><br><small style="color:var(--muted)">src/utils/auction.js</small><br><code>auction.js</code><br><small style="color:var(--muted)">src/constants/auction.js</small><br><code>common.js</code><br><small style="color:var(--muted)">src/utils/common.js</small><br>+7 more</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>theme.js</code><br><small style="color:var(--muted)">src/theme.js</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>main.jsx</code><br><small style="color:var(--muted)">src/main.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>theme.js node in src/theme.js.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>theme</code><br><small style="color:var(--muted)">src/theme.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main.jsx</code><br><small style="color:var(--muted)">src/main.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>theme node in src/theme.js.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>copilot-instructions.md</code><br><small style="color:var(--muted)">.github/copilot-instructions.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing copilot-instructions.md.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Copilot Instructions</code><br><small style="color:var(--muted)">.github/copilot-instructions.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Copilot Instructions.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/services/storage.js</code></td><td>7 nodes</td></tr>
+<tr><td><code>.github/copilot-instructions.md</code></td><td>3 nodes</td></tr>
+<tr><td><code>src/constants/storage.js</code></td><td>3 nodes</td></tr>
+<tr><td><code>src/App.jsx</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/components/MainNavigation.jsx</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/constants/project.js</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/hooks/useAuctionWorkspace.js</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/hooks/useRosterHistory.js</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x19, calls x17, contains x17, imports x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. Ingestion & Updates ====== -->
+<h2 id="ingest-cache-update">4. Ingestion &amp; Updates</h2>
+<p>Ingestion &amp; Updates groups implementation around scripts, aggiorna, quotazionipy, understat, mostly in scripts/aggiorna_quotazioni.py, scripts/update-graphify-lmstudio.sh. This section covers 35 nodes and 49 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Ingestion &amp; Updates (35 nodes, 49 edges)
+    scripts_aggiorna_quotazioni_download_understat_h_67eb24da("download_understat_html()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_understat_b_6ed0a25d("download_understat_browser()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_understat_catalog_cu_7d3494ae("understat_catalog_current()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_advanced_ca_1076ddd8("download_advanced_catalogs()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_availabilit_0e0e573f("download availability catalog()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_injury_cata_103fbbb0("download_injury_catalog()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_understat_l_cacd7172("understat league json()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_understat_api_url_6d5b44f7("_understat_api_url()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_text_5d9e8585("download_text()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_understat_validate_t_eb5937d9("validate title season()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_understat_has_payloa_0024fda8("_understat_has_payload()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_excel_2f6bba22("download_excel()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_get_cookie_01e25366("get_cookie()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_set_pieces_3d16a8b4("set pieces catalogs()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_source_ca67abf4("download_source()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_understat_is_challen_2480eb7b("_understat_is_challenge()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_understat_rows_from_ff233bdb("from rendered html()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_understat_inject_pla_349f0911("_understat_inject_players()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_download_advanced_ca_1076ddd8 -->|calls| scripts_aggiorna_quotazioni_understat_catalog_cu_7d3494ae
+    scripts_aggiorna_quotazioni_download_understat_l_cacd7172 -->|calls| scripts_aggiorna_quotazioni_understat_api_url_6d5b44f7
+    scripts_aggiorna_quotazioni_understat_catalog_cu_7d3494ae -->|calls| scripts_aggiorna_quotazioni_download_text_5d9e8585
+    scripts_aggiorna_quotazioni_understat_catalog_cu_7d3494ae -->|calls| scripts_aggiorna_quotazioni_understat_validate_t_eb5937d9
+    scripts_aggiorna_quotazioni_understat_catalog_cu_7d3494ae -->|calls| scripts_aggiorna_quotazioni_understat_has_payloa_0024fda8
+    scripts_aggiorna_quotazioni_understat_catalog_cu_7d3494ae -->|calls| scripts_aggiorna_quotazioni_download_understat_l_cacd7172
+    scripts_aggiorna_quotazioni_download_availabilit_0e0e573f -->|calls| scripts_aggiorna_quotazioni_download_text_5d9e8585
+    scripts_aggiorna_quotazioni_download_excel_2f6bba22 -->|calls| scripts_aggiorna_quotazioni_get_cookie_01e25366
+    scripts_aggiorna_quotazioni_download_injury_cata_103fbbb0 -->|calls| scripts_aggiorna_quotazioni_download_text_5d9e8585
+    scripts_aggiorna_quotazioni_download_set_pieces_3d16a8b4 -->|calls| scripts_aggiorna_quotazioni_download_text_5d9e8585
+    scripts_aggiorna_quotazioni_download_source_ca67abf4 -->|calls| scripts_aggiorna_quotazioni_download_excel_2f6bba22
+    scripts_aggiorna_quotazioni_download_text_5d9e8585 -->|calls| scripts_aggiorna_quotazioni_get_cookie_01e25366
+    scripts_aggiorna_quotazioni_download_understat_b_6ed0a25d -->|calls| scripts_aggiorna_quotazioni_understat_has_payloa_0024fda8
+    scripts_aggiorna_quotazioni_download_understat_b_6ed0a25d -->|calls| scripts_aggiorna_quotazioni_understat_is_challen_2480eb7b
+    scripts_aggiorna_quotazioni_download_understat_b_6ed0a25d -->|calls| scripts_aggiorna_quotazioni_understat_rows_from_ff233bdb
+    scripts_aggiorna_quotazioni_download_understat_b_6ed0a25d -->|calls| scripts_aggiorna_quotazioni_understat_inject_pla_349f0911
+    scripts_aggiorna_quotazioni_download_understat_h_67eb24da -->|calls| scripts_aggiorna_quotazioni_download_text_5d9e8585
+    scripts_aggiorna_quotazioni_download_understat_h_67eb24da -->|calls| scripts_aggiorna_quotazioni_understat_has_payloa_0024fda8
+    scripts_aggiorna_quotazioni_download_understat_h_67eb24da -->|calls| scripts_aggiorna_quotazioni_understat_is_challen_2480eb7b
+    scripts_aggiorna_quotazioni_download_understat_h_67eb24da -->|calls| scripts_aggiorna_quotazioni_download_understat_b_6ed0a25d
+    %% Omitted for readability: 17 nodes, 0 edges
+    class scripts_aggiorna_quotazioni_download_understat_h_67eb24da function;
+    class scripts_aggiorna_quotazioni_download_understat_b_6ed0a25d function;
+    class scripts_aggiorna_quotazioni_understat_catalog_cu_7d3494ae function;
+    class scripts_aggiorna_quotazioni_download_advanced_ca_1076ddd8 function;
+    class scripts_aggiorna_quotazioni_download_availabilit_0e0e573f function;
+    class scripts_aggiorna_quotazioni_download_injury_cata_103fbbb0 function;
+    class scripts_aggiorna_quotazioni_download_understat_l_cacd7172 function;
+    class scripts_aggiorna_quotazioni_understat_api_url_6d5b44f7 api;
+    class scripts_aggiorna_quotazioni_download_text_5d9e8585 function;
+    class scripts_aggiorna_quotazioni_understat_validate_t_eb5937d9 function;
+    class scripts_aggiorna_quotazioni_understat_has_payloa_0024fda8 function;
+    class scripts_aggiorna_quotazioni_download_excel_2f6bba22 function;
+    class scripts_aggiorna_quotazioni_get_cookie_01e25366 function;
+    class scripts_aggiorna_quotazioni_download_set_pieces_3d16a8b4 function;
+    class scripts_aggiorna_quotazioni_download_source_ca67abf4 function;
+    class scripts_aggiorna_quotazioni_understat_is_challen_2480eb7b function;
+    class scripts_aggiorna_quotazioni_understat_rows_from_ff233bdb function;
+    class scripts_aggiorna_quotazioni_understat_inject_pla_349f0911 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>download_understat_browser()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_understat_html()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_capture_response()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_understat_has_payload()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_understat_inject_players()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+4 more</td>
+  <td>download_understat_browser() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>_capture_response()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_understat_browser()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_capture_response() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>download_understat_html()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>team fallback catalog()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_understat_has_payload()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_understat_is_challenge()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>download_text()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+2 more</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>_understat_has_payload()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_understat_browser()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>download_understat_html()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>understat_catalog_current()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_understat_has_payload() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>_understat_inject_players()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_understat_browser()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_understat_inject_players() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>_understat_is_challenge()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_understat_browser()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>download_understat_html()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>missing payload error()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_understat_is_challenge() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>_understat_missing_payload_error()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_parse_understat_variable()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_understat_is_challenge()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>_understat_missing_payload_error() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>_understat_rows_from_rendered_html()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_understat_browser()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Fallback DOM: legge una tabella giocatori gia&#x27; renderizzata da Chromium.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Fallback DOM: legge una tabella giocatori gia&#x27; renderizzata da Chromium..</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Fallback browser reale: esegue JavaScript e restituisce l&#x27;HTML renderizzato.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Fallback browser reale: esegue JavaScript e restituisce l&#x27;HTML renderizzato..</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Prima requests; se manca il payload/challenge, usa Chromium.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Prima requests; se manca il payload/challenge, usa Chromium..</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>download_advanced_catalogs()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>understat_catalog_current()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>download_advanced_catalogs() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>download_understat_league_json()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>understat_catalog_current()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_understat_api_url()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>download_understat_league_json() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>_understat_api_url()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td><code>understat league json()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>_understat_api_url() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>understat_catalog_current()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_advanced_catalogs()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_understat_has_payload()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>catalog from rows()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>download_text()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+3 more</td>
+  <td>understat_catalog_current() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>_understat_validate_title_season()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>understat_catalog_current()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>_understat_validate_title_season() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Costruisce l&#x27;endpoint JSON usato dal sito Understat corrente.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Costruisce l&#x27;endpoint JSON usato dal sito Understat corrente..</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Scarica il JSON usato dal frontend Understat corrente. Understat non incorpora…</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Scarica il JSON usato dal frontend Understat corrente. Understat non incorpora….</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Parser Understat corrente con compatibilita&#x27; legacy HTML.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Parser Understat corrente con compatibilita&#x27; legacy HTML..</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Carica metriche avanzate opzionali. Qualunque errore della fonte esterna…</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Carica metriche avanzate opzionali. Qualunque errore della fonte esterna….</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Evita di salvare 2025/26 sotto 2026/27 quando Understat fa fallback di stagione.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Evita di salvare 2025/26 sotto 2026/27 quando Understat fa fallback di stagione..</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>download_availability_catalog()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>download_text()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>parse fantacalcio availability()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>download_availability_catalog() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>download_excel()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_source()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>download_stats_catalogs()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>get_cookie()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>download_excel() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>download_injury_catalog()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>download_text()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>parse_fantacalcio_injuries()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>download_injury_catalog() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>download_set_pieces_catalogs()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>download_text()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>fantacalcio set pieces()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>download_set_pieces_catalogs() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>download_source()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>download_excel()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>download_source() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>download_text()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download availability catalog()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>download_injury_catalog()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>download_understat_html()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+2 more</td>
+  <td><code>get_cookie()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>download_text() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>get_cookie()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download_excel()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>download_text()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>UpdateError</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>get_cookie() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Any</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Any node in project.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Scarica una pagina HTML opzionale usata per arricchire players.json.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Scarica una pagina HTML opzionale usata per arricchire players.json..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>scripts/aggiorna_quotazioni.py</code></td><td>29 nodes</td></tr>
+<tr><td><code>scripts/update-graphify-lmstudio.sh</code></td><td>5 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x21, references x14, explains x9, defines x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. match_player_id ====== -->
+<h2 id="match-player-id">5. match_player_id</h2>
+<p>match_player_id groups implementation around scripts, aggiorna, quotazionipy, parse, mostly in scripts/aggiorna_quotazioni.py. This section covers 18 nodes and 27 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: match_player_id (18 nodes, 27 edges)
+    scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678("_parse_tactical_positions()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_parse_fantacalcio_se_2d948157("fantacalcio set pieces()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_parse_fantacalcio_av_527ee2bf("parse fantacalcio availability()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_detect_team_from_tok_2042ae50("_detect_team_from_token()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_names_compatible_54f4a3e9("_names_compatible()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_match_player_id_4900ad86("match_player_id()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_team_key_3da1202c("_team_key()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_name_tokens_9aca42f5("_name_tokens()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_fc_name_signature_0179057a("_fc_name_signature()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_split_player_list_c3b4a06d("_split_player_list()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_formation_parts_42b8fb96("_formation_parts()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_line_position_labels_5d670eef("_line_position_labels()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_formation_label_429f09b4("_formation_label()<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_rationale_1319_dba0cbeb("Estrae moduli standard tipo 4-3-3 / 3-4...<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_rationale_1335_03afd5ef("Etichette posizionali da sinistra a des...<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_rationale_1563_12f0b784("Legge gerarchie 'Rigoristi' e 'Calci da...<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_rationale_475_74ef99aa("Restituisce un Id solo se il match e' u...<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_rationale_1390_4e75988e("Ricava modulo e posizione dai primi 11...<br/><small>scripts/aggiorna_quotazioni.py</small>")
+    scripts_aggiorna_quotazioni_detect_team_from_tok_2042ae50 -->|calls| scripts_aggiorna_quotazioni_team_key_3da1202c
+    scripts_aggiorna_quotazioni_detect_team_from_tok_2042ae50 -->|calls| scripts_aggiorna_quotazioni_name_tokens_9aca42f5
+    scripts_aggiorna_quotazioni_fc_name_signature_0179057a -->|calls| scripts_aggiorna_quotazioni_name_tokens_9aca42f5
+    scripts_aggiorna_quotazioni_match_player_id_4900ad86 -->|calls| scripts_aggiorna_quotazioni_name_tokens_9aca42f5
+    scripts_aggiorna_quotazioni_match_player_id_4900ad86 -->|calls| scripts_aggiorna_quotazioni_names_compatible_54f4a3e9
+    scripts_aggiorna_quotazioni_match_player_id_4900ad86 -->|calls| scripts_aggiorna_quotazioni_team_key_3da1202c
+    scripts_aggiorna_quotazioni_names_compatible_54f4a3e9 -->|calls| scripts_aggiorna_quotazioni_fc_name_signature_0179057a
+    scripts_aggiorna_quotazioni_names_compatible_54f4a3e9 -->|calls| scripts_aggiorna_quotazioni_name_tokens_9aca42f5
+    scripts_aggiorna_quotazioni_parse_fantacalcio_av_527ee2bf -->|calls| scripts_aggiorna_quotazioni_name_tokens_9aca42f5
+    scripts_aggiorna_quotazioni_parse_fantacalcio_av_527ee2bf -->|calls| scripts_aggiorna_quotazioni_match_player_id_4900ad86
+    scripts_aggiorna_quotazioni_parse_fantacalcio_av_527ee2bf -->|calls| scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678
+    scripts_aggiorna_quotazioni_parse_fantacalcio_se_2d948157 -->|calls| scripts_aggiorna_quotazioni_team_key_3da1202c
+    scripts_aggiorna_quotazioni_parse_fantacalcio_se_2d948157 -->|calls| scripts_aggiorna_quotazioni_name_tokens_9aca42f5
+    scripts_aggiorna_quotazioni_parse_fantacalcio_se_2d948157 -->|calls| scripts_aggiorna_quotazioni_split_player_list_c3b4a06d
+    scripts_aggiorna_quotazioni_parse_fantacalcio_se_2d948157 -->|calls| scripts_aggiorna_quotazioni_match_player_id_4900ad86
+    scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678 -->|calls| scripts_aggiorna_quotazioni_team_key_3da1202c
+    scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678 -->|calls| scripts_aggiorna_quotazioni_detect_team_from_tok_2042ae50
+    scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678 -->|calls| scripts_aggiorna_quotazioni_formation_parts_42b8fb96
+    scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678 -->|calls| scripts_aggiorna_quotazioni_match_player_id_4900ad86
+    scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678 -->|calls| scripts_aggiorna_quotazioni_line_position_labels_5d670eef
+    scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678 -->|calls| scripts_aggiorna_quotazioni_formation_label_429f09b4
+    scripts_aggiorna_quotazioni_team_key_3da1202c -->|calls| scripts_aggiorna_quotazioni_name_tokens_9aca42f5
+    class scripts_aggiorna_quotazioni_parse_tactical_posit_d26bd678 function;
+    class scripts_aggiorna_quotazioni_parse_fantacalcio_se_2d948157 function;
+    class scripts_aggiorna_quotazioni_parse_fantacalcio_av_527ee2bf function;
+    class scripts_aggiorna_quotazioni_detect_team_from_tok_2042ae50 function;
+    class scripts_aggiorna_quotazioni_names_compatible_54f4a3e9 function;
+    class scripts_aggiorna_quotazioni_match_player_id_4900ad86 function;
+    class scripts_aggiorna_quotazioni_team_key_3da1202c function;
+    class scripts_aggiorna_quotazioni_name_tokens_9aca42f5 function;
+    class scripts_aggiorna_quotazioni_fc_name_signature_0179057a function;
+    class scripts_aggiorna_quotazioni_split_player_list_c3b4a06d function;
+    class scripts_aggiorna_quotazioni_formation_parts_42b8fb96 function;
+    class scripts_aggiorna_quotazioni_line_position_labels_5d670eef function;
+    class scripts_aggiorna_quotazioni_formation_label_429f09b4 function;
+    class scripts_aggiorna_quotazioni_rationale_1319_dba0cbeb concept;
+    class scripts_aggiorna_quotazioni_rationale_1335_03afd5ef concept;
+    class scripts_aggiorna_quotazioni_rationale_1563_12f0b784 concept;
+    class scripts_aggiorna_quotazioni_rationale_475_74ef99aa concept;
+    class scripts_aggiorna_quotazioni_rationale_1390_4e75988e concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>_detect_team_from_token()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_parse_tactical_positions()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_name_tokens()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_team_key()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>_detect_team_from_token() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>_fc_name_signature()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_names_compatible()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_name_tokens()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>_fc_name_signature() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>_formation_label()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_parse_tactical_positions()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_formation_label() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>_formation_parts()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_parse_tactical_positions()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_formation_parts() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>_line_position_labels()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_parse_tactical_positions()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_line_position_labels() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>match_player_id()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_parse_tactical_positions()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>catalog from rows()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>fantacalcio set pieces()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+2 more</td>
+  <td><code>_name_tokens()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_names_compatible()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_team_key()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>match_player_id() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>_name_tokens()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_detect_team_from_token()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_fc_name_signature()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_names_compatible()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+4 more</td>
+  <td>No direct outbound edge</td>
+  <td>_name_tokens() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>_names_compatible()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>match_player_id()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_fc_name_signature()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_name_tokens()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>_names_compatible() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>parse_fantacalcio_availability()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>download availability catalog()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_name_tokens()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_norm_text()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_parse_tactical_positions()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+2 more</td>
+  <td>parse_fantacalcio_availability() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>parse_fantacalcio_set_pieces()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>set pieces catalogs()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_name_tokens()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_split_player_list()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_team_key()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+2 more</td>
+  <td>parse_fantacalcio_set_pieces() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>_parse_tactical_positions()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>parse fantacalcio availability()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><code>_detect_team_from_token()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_formation_label()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_formation_parts()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+3 more</td>
+  <td>_parse_tactical_positions() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>_split_player_list()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>fantacalcio set pieces()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_split_player_list() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>_team_key()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_detect_team_from_token()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>_parse_tactical_positions()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br><code>fantacalcio set pieces()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small><br>+2 more</td>
+  <td><code>_name_tokens()</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td>_team_key() node in scripts/aggiorna_quotazioni.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Estrae moduli standard tipo 4-3-3 / 3-4-2-1; totale giocatori di movimento = 10.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Estrae moduli standard tipo 4-3-3 / 3-4-2-1; totale giocatori di movimento = 10..</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Etichette posizionali da sinistra a destra per gli 11 titolari.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Etichette posizionali da sinistra a destra per gli 11 titolari..</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Ricava modulo e posizione dai primi 11 nomi successivi al modulo della squadra.…</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Ricava modulo e posizione dai primi 11 nomi successivi al modulo della squadra.….</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Legge gerarchie &#x27;Rigoristi&#x27; e &#x27;Calci da fermo/Punizioni/Corner&#x27; da una guida…</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Legge gerarchie &#x27;Rigoristi&#x27; e &#x27;Calci da fermo/Punizioni/Corner&#x27; da una guida….</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Restituisce un Id solo se il match e&#x27; univoco; altrimenti ignora il record.</code><br><small style="color:var(--muted)">scripts/aggiorna_quotazioni.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Restituisce un Id solo se il match e&#x27; univoco; altrimenti ignora il record..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>scripts/aggiorna_quotazioni.py</code></td><td>18 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x22, explains x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 6. validate-project.mjs ====== -->
+<h2 id="validate-project-mjs">6. validate-project.mjs</h2>
+<p>validate-project.mjs groups implementation around validate, projectmjs, scripts, collectsources, mostly in scripts/validate-project.mjs. This section covers 13 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: validate-project.mjs (13 nodes, 14 edges)
+    scripts_validate_project_collectsources_8039f0ca("collectSources()<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_walk_cc753015("walk()<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_builtinprefixes_afa28af1("builtinPrefixes<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_declared_3c98b427("declared<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_forbidden_d3ffae76("forbidden<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_missing_d7ba5ed8("missing<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_packagename_05a1c7e4("packageName()<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_pkg_d6a8449e("pkg<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_players_70da0890("players<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_required_380d918c("required<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_root_ea8d9405("root<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_sourcefiles_8e973955("sourceFiles<br/><small>scripts/validate-project.mjs</small>")
+    scripts_validate_project_a61276ec("validate-project.mjs")
+    scripts_validate_project_collectsources_8039f0ca -->|calls| scripts_validate_project_collectsources_8039f0ca
+    scripts_validate_project_walk_cc753015 -->|calls| scripts_validate_project_walk_cc753015
+    class scripts_validate_project_collectsources_8039f0ca function;
+    class scripts_validate_project_walk_cc753015 function;
+    class scripts_validate_project_builtinprefixes_afa28af1 function;
+    class scripts_validate_project_declared_3c98b427 function;
+    class scripts_validate_project_forbidden_d3ffae76 function;
+    class scripts_validate_project_missing_d7ba5ed8 function;
+    class scripts_validate_project_packagename_05a1c7e4 function;
+    class scripts_validate_project_pkg_d6a8449e function;
+    class scripts_validate_project_players_70da0890 function;
+    class scripts_validate_project_required_380d918c function;
+    class scripts_validate_project_root_ea8d9405 function;
+    class scripts_validate_project_sourcefiles_8e973955 function;
+    class scripts_validate_project_a61276ec function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>collectSources()</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>collectSources()</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><code>collectSources()</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td>collectSources() node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>packageName()</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>packageName() node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>walk()</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>walk()</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><code>walk()</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td>walk() node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>validate-project.mjs</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>validate-project.mjs node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>builtinPrefixes</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>builtinPrefixes node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>declared</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>declared node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>forbidden</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>forbidden node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>missing</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>missing node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>pkg</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>pkg node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>players</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>players node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>required</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>required node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>root</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>root node in scripts/validate-project.mjs.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>sourceFiles</code><br><small style="color:var(--muted)">scripts/validate-project.mjs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>sourceFiles node in scripts/validate-project.mjs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>scripts/validate-project.mjs</code></td><td>13 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x12, calls x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 7. exportImport.js ====== -->
+<h2 id="exportimport-js">7. exportImport.js</h2>
+<p>exportImport.js groups implementation around utils, exportimportjs, historymodaljsx, components, mostly in src/utils/exportImport.js, src/components/HistoryModal.jsx, src/utils/budget.js. This section covers 11 nodes and 22 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: exportImport.js (11 nodes, 22 edges)
+    subgraph exportimport_js_src_utils_exportImport_js_981ac8b4["src/utils/exportImport.js"]
+        src_utils_exportimport_normalizeimportedroster_14ce678d("normalizeImportedRoster()<br/><small>src/utils/exportImport.js</small>")
+        src_utils_exportimport_downloadjson_2b9c69fc("downloadJson()<br/><small>src/utils/exportImport.js</small>")
+        src_utils_exportimport_rosterexportpackage_1bebd823("rosterExportPackage()<br/><small>src/utils/exportImport.js</small>")
+        src_utils_exportimport_extractimportedrosters_03f431f0("extractImportedRosters()<br/><small>src/utils/exportImport.js</small>")
+        src_utils_exportimport_defaultrostername_81dd8f5b("defaultRosterName()<br/><small>src/utils/exportImport.js</small>")
+        src_utils_exportimport_clamphistory_a2ffef59("clampHistory()<br/><small>src/utils/exportImport.js</small>")
+        src_utils_exportimport_40243b95("exportImport.js")
+    end
+    subgraph exportimport_js_src_components_HistoryModal_jsx_b492e565["src/components/HistoryModal.jsx"]
+        src_components_historymodal_47949c6f("HistoryModal.jsx")
+        src_components_historymodal_historymodal_926389fd("HistoryModal()<br/><small>src/components/HistoryModal.jsx</small>")
+    end
+    src_utils_budget_rostermeta_11fc575f("rosterMeta()<br/><small>src/utils/budget.js</small>")
+    src_utils_common_safefilepart_03f580c7("safeFilePart()<br/><small>src/utils/common.js</small>")
+    src_components_historymodal_historymodal_926389fd -->|calls| src_utils_common_safefilepart_03f580c7
+    src_components_historymodal_historymodal_926389fd -->|calls| src_utils_exportimport_downloadjson_2b9c69fc
+    src_components_historymodal_historymodal_926389fd -->|calls| src_utils_exportimport_rosterexportpackage_1bebd823
+    src_components_historymodal_historymodal_926389fd -->|calls| src_utils_exportimport_extractimportedrosters_03f431f0
+    src_components_historymodal_historymodal_926389fd -->|calls| src_utils_exportimport_normalizeimportedroster_14ce678d
+    src_components_historymodal_historymodal_926389fd -->|calls| src_utils_exportimport_defaultrostername_81dd8f5b
+    src_components_historymodal_historymodal_926389fd -->|calls| src_utils_budget_rostermeta_11fc575f
+    src_utils_exportimport_normalizeimportedroster_14ce678d -->|calls| src_utils_exportimport_defaultrostername_81dd8f5b
+    src_components_historymodal_47949c6f -->|imports| src_utils_budget_rostermeta_11fc575f
+    src_components_historymodal_47949c6f -->|imports| src_utils_common_safefilepart_03f580c7
+    src_components_historymodal_47949c6f -->|imports| src_utils_exportimport_defaultrostername_81dd8f5b
+    src_components_historymodal_47949c6f -->|imports| src_utils_exportimport_downloadjson_2b9c69fc
+    src_components_historymodal_47949c6f -->|imports| src_utils_exportimport_extractimportedrosters_03f431f0
+    src_components_historymodal_47949c6f -->|imports| src_utils_exportimport_normalizeimportedroster_14ce678d
+    src_components_historymodal_47949c6f -->|imports| src_utils_exportimport_rosterexportpackage_1bebd823
+    class src_utils_exportimport_normalizeimportedroster_14ce678d function;
+    class src_utils_exportimport_downloadjson_2b9c69fc function;
+    class src_utils_exportimport_rosterexportpackage_1bebd823 function;
+    class src_utils_exportimport_extractimportedrosters_03f431f0 function;
+    class src_utils_exportimport_defaultrostername_81dd8f5b function;
+    class src_utils_exportimport_clamphistory_a2ffef59 function;
+    class src_utils_exportimport_40243b95 module;
+    class src_components_historymodal_47949c6f ui;
+    class src_components_historymodal_historymodal_926389fd ui;
+    class src_utils_budget_rostermeta_11fc575f function;
+    class src_utils_common_safefilepart_03f580c7 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionsPage.jsx</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small></td>
+  <td><code>defaultRosterName()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small><br><code>downloadJson()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small><br><code>extractImportedRosters()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small><br>+5 more</td>
+  <td>HistoryModal() node in src/components/HistoryModal.jsx.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>rosterMeta()</code><br><small style="color:var(--muted)">src/utils/budget.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>rosterMeta() node in src/utils/budget.js.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>safeFilePart()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>safeFilePart() node in src/utils/common.js.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>clampHistory()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>clampHistory() node in src/utils/exportImport.js.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>defaultRosterName()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>normalizeImportedRoster()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>defaultRosterName() node in src/utils/exportImport.js.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>downloadJson()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>downloadJson() node in src/utils/exportImport.js.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>extractImportedRosters()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>extractImportedRosters() node in src/utils/exportImport.js.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>normalizeImportedRoster()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small></td>
+  <td><code>defaultRosterName()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small><br><code>normalizeAuctionState()</code><br><small style="color:var(--muted)">src/utils/auction.js</small><br><code>uid()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>normalizeImportedRoster() node in src/utils/exportImport.js.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>rosterExportPackage()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HistoryModal()</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small><br><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small></td>
+  <td><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small></td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>HistoryModal.jsx</code><br><small style="color:var(--muted)">src/components/HistoryModal.jsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>AuctionsPage.jsx</code><br><small style="color:var(--muted)">src/pages/AuctionsPage.jsx</small></td>
+  <td><code>@mui/material</code><br><small style="color:var(--muted)">package.json</small><br><code>defaultRosterName()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small><br><code>downloadJson()</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small><br>+8 more</td>
+  <td>HistoryModal.jsx node in src/components/HistoryModal.jsx.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>exportImport.js</code><br><small style="color:var(--muted)">src/utils/exportImport.js</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>auction.js</code><br><small style="color:var(--muted)">src/utils/auction.js</small><br><code>clone()</code><br><small style="color:var(--muted)">src/utils/common.js</small><br><code>common.js</code><br><small style="color:var(--muted)">src/utils/common.js</small><br>+4 more</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/utils/exportImport.js</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/components/HistoryModal.jsx</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/utils/budget.js</code></td><td>1 nodes</td></tr>
+<tr><td><code>src/utils/common.js</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x8, imports x7, contains x7. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Fantacalcio Asta ====== -->
+<h2 id="fantacalcio-asta">8. Fantacalcio Asta</h2>
+<p>Fantacalcio Asta groups implementation around readmemd, github, dati, deploy, mostly in README.md. This section covers 11 nodes and 10 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Fantacalcio Asta (11 nodes, 10 edges)
+    readme_fantacalcio_asta_04e9ed59("Fantacalcio Asta<br/><small>README.md</small>")
+    readme_github_actions_6bb8ed0a("GitHub Actions<br/><small>README.md</small>")
+    readme_f78a71af("README.md")
+    readme_secret_github_e44f5904("Secret GitHub<br/><small>README.md</small>")
+    readme_persistenza_browser_ef8a0602("Persistenza browser<br/><small>README.md</small>")
+    readme_struttura_c769cf4c("Struttura<br/><small>README.md</small>")
+    readme_dati_c216a864("Dati<br/><small>README.md</small>")
+    readme_frontend_a75e0159("Frontend<br/><small>README.md</small>")
+    readme_graphify_integration_with_lm_studio_0d5db561("Graphify Integration with LM Studio<br/><small>README.md</small>")
+    readme_deploy_pages_yml_6a6be6de("deploy-pages.yml<br/><small>README.md</small>")
+    readme_update_data_yml_d57caea5("update-data.yml<br/><small>README.md</small>")
+    readme_f78a71af -->|contains| readme_fantacalcio_asta_04e9ed59
+    readme_fantacalcio_asta_04e9ed59 -->|contains| readme_github_actions_6bb8ed0a
+    readme_fantacalcio_asta_04e9ed59 -->|contains| readme_secret_github_e44f5904
+    readme_fantacalcio_asta_04e9ed59 -->|contains| readme_persistenza_browser_ef8a0602
+    readme_fantacalcio_asta_04e9ed59 -->|contains| readme_struttura_c769cf4c
+    readme_fantacalcio_asta_04e9ed59 -->|contains| readme_graphify_integration_with_lm_studio_0d5db561
+    readme_fantacalcio_asta_04e9ed59 -->|contains| readme_frontend_a75e0159
+    readme_fantacalcio_asta_04e9ed59 -->|contains| readme_dati_c216a864
+    readme_github_actions_6bb8ed0a -->|contains| readme_update_data_yml_d57caea5
+    readme_github_actions_6bb8ed0a -->|contains| readme_deploy_pages_yml_6a6be6de
+    class readme_fantacalcio_asta_04e9ed59 concept;
+    class readme_github_actions_6bb8ed0a concept;
+    class readme_f78a71af concept;
+    class readme_secret_github_e44f5904 concept;
+    class readme_persistenza_browser_ef8a0602 concept;
+    class readme_struttura_c769cf4c concept;
+    class readme_dati_c216a864 concept;
+    class readme_frontend_a75e0159 concept;
+    class readme_graphify_integration_with_lm_studio_0d5db561 concept;
+    class readme_deploy_pages_yml_6a6be6de concept;
+    class readme_update_data_yml_d57caea5 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>README.md</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing README.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Dati</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Dati.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>`deploy-pages.yml`</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `deploy-pages.yml`.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Fantacalcio Asta</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fantacalcio Asta.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Frontend</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Frontend.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>GitHub Actions</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing GitHub Actions.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Graphify Integration with LM Studio</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Graphify Integration with LM Studio.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Persistenza browser</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Persistenza browser.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Secret GitHub</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Secret GitHub.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Struttura</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Struttura.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>`update-data.yml`</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `update-data.yml`.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>README.md</code></td><td>11 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 9. setup-graphify-lmstudio.sh ====== -->
+<h2 id="setup-graphify-lmstudio-sh">9. setup-graphify-lmstudio.sh</h2>
+<p>setup-graphify-lmstudio.sh groups implementation around setup, graphify, lmstudiosh, scripts, mostly in scripts/setup-graphify-lmstudio.sh. This section covers 5 nodes and 4 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: setup-graphify-lmstudio.sh (5 nodes, 4 edges)
+    scripts_setup_graphify_lmstudio_1a528973("setup-graphify-lmstudio.sh")
+    scripts_setup_graphify_lmstudio_openai_api_key_d4531048("OPENAI_API_KEY<br/><small>scripts/setup-graphify-lmstudio.sh</small>")
+    scripts_setup_graphify_lmstudio_openai_model_d699f82a("OPENAI_MODEL<br/><small>scripts/setup-graphify-lmstudio.sh</small>")
+    scripts_setup_graphify_lmstudio_openai_base_url_b3074257("OPENAI_BASE_URL<br/><small>scripts/setup-graphify-lmstudio.sh</small>")
+    scripts_setup_graphify_lmstudio_sh_entry_01876f02("setup-graphify-lmstudio.sh script<br/><small>scripts/setup-graphify-lmstudio.sh</small>")
+    scripts_setup_graphify_lmstudio_1a528973 -->|defines| scripts_setup_graphify_lmstudio_openai_api_key_d4531048
+    scripts_setup_graphify_lmstudio_1a528973 -->|defines| scripts_setup_graphify_lmstudio_openai_model_d699f82a
+    scripts_setup_graphify_lmstudio_1a528973 -->|defines| scripts_setup_graphify_lmstudio_openai_base_url_b3074257
+    scripts_setup_graphify_lmstudio_1a528973 -->|contains| scripts_setup_graphify_lmstudio_sh_entry_01876f02
+    class scripts_setup_graphify_lmstudio_1a528973 function;
+    class scripts_setup_graphify_lmstudio_openai_api_key_d4531048 api;
+    class scripts_setup_graphify_lmstudio_openai_model_d699f82a klass;
+    class scripts_setup_graphify_lmstudio_openai_base_url_b3074257 klass;
+    class scripts_setup_graphify_lmstudio_sh_entry_01876f02 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>setup-graphify-lmstudio.sh</code><br><small style="color:var(--muted)">scripts/setup-graphify-lmstudio.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>OPENAI_API_KEY</code><br><small style="color:var(--muted)">scripts/setup-graphify-lmstudio.sh</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>OPENAI_API_KEY node in scripts/setup-graphify-lmstudio.sh.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>OPENAI_BASE_URL</code><br><small style="color:var(--muted)">scripts/setup-graphify-lmstudio.sh</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>OPENAI_BASE_URL node in scripts/setup-graphify-lmstudio.sh.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>OPENAI_MODEL</code><br><small style="color:var(--muted)">scripts/setup-graphify-lmstudio.sh</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>OPENAI_MODEL node in scripts/setup-graphify-lmstudio.sh.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>setup-graphify-lmstudio.sh script</code><br><small style="color:var(--muted)">scripts/setup-graphify-lmstudio.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>scripts/setup-graphify-lmstudio.sh</code></td><td>5 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x3, contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 10. rosterCompare.js ====== -->
+<h2 id="rostercompare-js">10. rosterCompare.js</h2>
+<p>rosterCompare.js groups implementation around rostercomparejs, utils, catalogindex, comparerosterstates, mostly in src/utils/rosterCompare.js. This section covers 5 nodes and 8 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: rosterCompare.js (5 nodes, 8 edges)
+    src_utils_rostercompare_rosterentries_62e7eea9("rosterEntries()<br/><small>src/utils/rosterCompare.js</small>")
+    src_utils_rostercompare_comparerosterstates_aff4ff35("compareRosterStates()<br/><small>src/utils/rosterCompare.js</small>")
+    src_utils_rostercompare_catalogindex_19693bf1("catalogIndex()<br/><small>src/utils/rosterCompare.js</small>")
+    src_utils_rostercompare_normalizename_3bad67ca("normalizeName()<br/><small>src/utils/rosterCompare.js</small>")
+    src_utils_rostercompare_d6c6fb5e("rosterCompare.js")
+    src_utils_rostercompare_catalogindex_19693bf1 -->|calls| src_utils_rostercompare_normalizename_3bad67ca
+    src_utils_rostercompare_comparerosterstates_aff4ff35 -->|calls| src_utils_rostercompare_rosterentries_62e7eea9
+    src_utils_rostercompare_rosterentries_62e7eea9 -->|calls| src_utils_rostercompare_catalogindex_19693bf1
+    src_utils_rostercompare_rosterentries_62e7eea9 -->|calls| src_utils_rostercompare_normalizename_3bad67ca
+    class src_utils_rostercompare_rosterentries_62e7eea9 function;
+    class src_utils_rostercompare_comparerosterstates_aff4ff35 function;
+    class src_utils_rostercompare_catalogindex_19693bf1 function;
+    class src_utils_rostercompare_normalizename_3bad67ca function;
+    class src_utils_rostercompare_d6c6fb5e module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>catalogIndex()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>rosterEntries()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td><code>normalizeName()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td>catalogIndex() node in src/utils/rosterCompare.js.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>compareRosterStates()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RosterCompareModal()</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small><br><code>RosterCompareModal.jsx</code><br><small style="color:var(--muted)">src/components/RosterCompareModal.jsx</small></td>
+  <td><code>rosterEntries()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td>compareRosterStates() node in src/utils/rosterCompare.js.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>normalizeName()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>catalogIndex()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small><br><code>rosterEntries()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>normalizeName() node in src/utils/rosterCompare.js.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>rosterEntries()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>compareRosterStates()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td><code>catalogIndex()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small><br><code>normalizeName()</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td>rosterEntries() node in src/utils/rosterCompare.js.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>rosterCompare.js</code><br><small style="color:var(--muted)">src/utils/rosterCompare.js</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>index.js</code><br><small style="color:var(--muted)">src/constants/index.js</small><br><code>ROLE_ORDER</code><br><small style="color:var(--muted)">src/constants/auction.js</small></td>
+  <td>rosterCompare.js node in src/utils/rosterCompare.js.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/utils/rosterCompare.js</code></td><td>5 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x4, contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>281</td></tr>
+      <tr><td>Edges</td><td>710</td></tr>
+      <tr><td>Hyperedges</td><td>0</td></tr>
+      <tr><td>Communities</td><td>18</td></tr>
+      <tr><td>Documented Sections</td><td>9</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>709</td></tr>
+      <tr><td>INFERRED</td><td>1</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>fantaasta — Architecture Documentation</p>
+  <p>Generated: 2026-09-22 17:35 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>
