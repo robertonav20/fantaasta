@@ -14,14 +14,14 @@ function probabilityChip(value) {
   if (value === null || value === undefined || value === '') return <Typography color="text.secondary">—</Typography>;
   const n = Number(value);
   const color = n >= 75 ? 'success' : n >= 50 ? 'warning' : 'error';
-  return <Chip size="small" color={color} label={`${Math.round(n)}%`} sx={{ minWidth: 52, fontWeight: 800, fontSize: 'larger' }}/>;
+  return <Chip size="small" color={color} label={`${Math.round(n)}%`} sx={{ minWidth: 52, fontWeight: 700, fontSize: 'larger' }} />;
 }
 
 function InjuryStatusChip({ injury }) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   if (injury?.injured !== true) {
-    return <Chip size="small" color="success" variant="outlined" label="Disponibile" sx={{ fontWeight: 800, fontSize: 'larger' }}/>;
+    return <Chip size="small" color="success" variant="outlined" label="Disponibile" sx={{ fontWeight: 700, fontSize: 'larger' }} />;
   }
 
   const cause = injury.description || injury.status || 'Dettaglio non disponibile';
@@ -41,7 +41,7 @@ function InjuryStatusChip({ injury }) {
           color="error"
           label="Infortunato"
           onClick={(event) => setAnchorEl(event.currentTarget)}
-          sx={{ cursor: 'pointer', fontWeight: 800, fontSize: 'larger' }}
+          sx={{ cursor: 'pointer', fontWeight: 700, fontSize: 'larger' }}
         />
       </Tooltip>
       <Popover
@@ -133,7 +133,7 @@ export default function PlayerTable({ catalog, meta }) {
   return (
     <Stack spacing={1.25}>
       <Paper variant="outlined" sx={{ p: { xs: 1, sm: 1.25 } }}>
-        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" gap={1}>
+        <Stack direction={{ xs: 'column', md: 'row' }} gap={1}>
           <Box>
             <Typography variant="h6">Catalogo giocatori</Typography>
             <Typography variant="caption" color="text.secondary">{filtered.length} risultati · Ultimo aggiornamento: {formatDateTime(meta?.catalogUpdatedAt)}</Typography>
@@ -141,7 +141,7 @@ export default function PlayerTable({ catalog, meta }) {
           <Tooltip title="Reset filtri"><IconButton onClick={reset}><RestartAltIcon /></IconButton></Tooltip>
         </Stack>
         <Box sx={{ mt: 1, display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: '2fr 1fr 1.4fr 1.3fr 1fr 1fr' }, gap: .75 }}>
-          <TextField size="small" label="Cerca nome" value={filters.query} onChange={(e) => setFilter('query', e.target.value)} placeholder="LIKE %nome%" sx={{ gridColumn: { xs: '1 / -1', sm: 'auto' } }} />
+          <TextField size="small" label="Cerca nome" value={filters.query} onChange={(e) => setFilter('query', e.target.value)} sx={{ gridColumn: { xs: '1 / -1', sm: 'auto' } }} />
           <FormControl size="small"><InputLabel>Ruolo</InputLabel><Select label="Ruolo" value={filters.role} onChange={(e) => setFilter('role', e.target.value)}><MenuItem value="">Tutti</MenuItem>{ROLE_ORDER.map((r) => <MenuItem key={r} value={r}>{ROLE_NAMES[r]}</MenuItem>)}</Select></FormControl>
           <FormControl size="small"><InputLabel>Squadra</InputLabel><Select label="Squadra" value={filters.team} onChange={(e) => setFilter('team', e.target.value)}><MenuItem value="">Tutte</MenuItem>{teams.map((team) => <MenuItem key={team} value={team}>{team}</MenuItem>)}</Select></FormControl>
           <FormControl size="small"><InputLabel>Stato</InputLabel><Select label="Stato" value={filters.injury} onChange={(e) => setFilter('injury', e.target.value)}><MenuItem value="">Tutti</MenuItem><MenuItem value="injured">Infortunati</MenuItem><MenuItem value="available">Disponibili</MenuItem></Select></FormControl>
@@ -154,19 +154,19 @@ export default function PlayerTable({ catalog, meta }) {
         <TableContainer sx={{ overflowX: 'auto', maxHeight: 'calc(100vh - 255px)' }}>
           <Table stickyHeader size="small" sx={{ minWidth: 1120 }}>
             <TableHead><TableRow>
-              {columns.map(([key, label]) => <TableCell key={key} align={['fvm','presenze','mv','fm','gol','assist'].includes(key) ? 'right' : 'left'}><TableSortLabel active={sort.key === key} direction={sort.key === key ? sort.dir : 'asc'} onClick={() => toggleSort(key)}>{label}</TableSortLabel></TableCell>)}
+              {columns.map(([key, label]) => <TableCell key={key} align={['fvm', 'presenze', 'mv', 'fm', 'gol', 'assist'].includes(key) ? 'right' : 'left'}><TableSortLabel active={sort.key === key} direction={sort.key === key ? sort.dir : 'asc'} onClick={() => toggleSort(key)}>{label}</TableSortLabel></TableCell>)}
               <TableCell align="center">Operazioni</TableCell>
             </TableRow></TableHead>
             <TableBody>
               {visible.map((row) => (
                 <TableRow key={`${row.role}-${row.player.id}`} hover sx={{ '&:nth-of-type(even)': { bgcolor: 'rgba(88,166,255,.035)' } }}>
                   <TableCell><RoleBadge role={row.role} /></TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>{row.name}</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>{row.name}</TableCell>
                   <TableCell>{row.team}</TableCell>
                   <TableCell>{row.tacticalRole ? <Box><b>{row.tacticalRole}</b> - <Typography variant="caption" display="block" color="text.secondary">{row.formation || '—'}</Typography></Box> : '—'}</TableCell>
                   <TableCell><InjuryStatusChip injury={row.injury} /></TableCell>
                   <TableCell align="center">{probabilityChip(row.playProbability)}</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800 }}>{money(row.fvm)}</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>{money(row.fvm)}</TableCell>
                   <TableCell align="right">{number(row.presenze)}</TableCell>
                   <TableCell align="right">{number(row.mv)}</TableCell>
                   <TableCell align="right">{number(row.fm)}</TableCell>

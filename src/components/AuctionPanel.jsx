@@ -79,9 +79,9 @@ export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMut
   return (
     <Stack spacing={1.1}>
       <Paper variant="outlined" sx={{ px: { xs: .75, sm: 1 }, py: .65 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={.75} flexWrap="wrap">
+        <Stack direction="row" gap={.75}>
           <Box sx={{ minWidth: 0, flex: '1 1 220px' }}>
-            <Stack direction="row" alignItems="baseline" spacing={.75} flexWrap="wrap">
+            <Stack direction="row" style={{alignItems: 'center'}} spacing={.75}>
               <Typography variant="h6" noWrap>{auction.name}</Typography>
               <Typography variant="caption" color="text.secondary" noWrap>
                 Catalogo {catalogUpdatedAt || '—'}{auction.historyId ? ' · storico' : ''}
@@ -89,7 +89,7 @@ export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMut
             </Stack>
           </Box>
 
-          <Stack direction="row" gap={.5} alignItems="center" sx={{ ml: 'auto' }}>
+          <Stack direction="row" gap={.5} sx={{ ml: 'auto' }}>
             <Tooltip title={Number(budgetInput || 0) < allocatedBudget ? 'Budget inferiore alla somma dei reparti' : 'Budget totale'}>
               <TextField
                 size="small"
@@ -123,7 +123,7 @@ export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMut
               <Tooltip title="Redo"><span><IconButton disabled={!canRedo} onClick={onRedo}><RedoIcon /></IconButton></span></Tooltip>
               <Tooltip title="Configura"><IconButton onClick={() => setConfigOpen(true)}><SettingsIcon /></IconButton></Tooltip>
               <Tooltip title={auction.historyId ? 'Aggiorna rosa nello storico' : 'Salva rosa nello storico'}><IconButton color={auction.historyId ? 'primary' : 'default'} onClick={onSaveOrUpdate}><SaveIcon /></IconButton></Tooltip>
-              <Tooltip title="Confronta rose"><IconButton onClick={onOpenCompare}><Box component="span" sx={{ fontWeight: 900, fontSize: 16, lineHeight: 1 }}>⇄</Box></IconButton></Tooltip>
+              <Tooltip title="Confronta rose"><IconButton onClick={onOpenCompare}><Box component="span" sx={{ fontWeight: 700, fontSize: 16, lineHeight: 1 }}>⇄</Box></IconButton></Tooltip>
               <Tooltip title="Gestione rose"><IconButton onClick={onOpenHistory}><HistoryIcon /></IconButton></Tooltip>
             </ButtonGroup>
           </Stack>
@@ -133,8 +133,8 @@ export default function AuctionPanel({ auction, catalog, canUndo, canRedo, onMut
       <AuctionSummary state={state} catalog={catalog} metrics={metrics} />
       <AuctionTable state={state} catalog={catalog} metrics={metrics} onPatchSlot={patchSlot} onShowPlayer={setInfoPlayer} isPlayerSelected={isPlayerSelected} />
 
-      <Stack direction="row" gap={.5} flexWrap="wrap" alignItems="center">
-        <Typography variant="caption" color="text.secondary">Giocatori per squadra:</Typography>
+      <Stack direction="row" style={{alignItems: 'center'}} gap={5}>
+        <Typography variant="caption">Giocatori per squadra:</Typography>
         {teamCounts.length ? teamCounts.map(([team, count]) => <Chip key={team} size="small" color={count > 4 ? 'error' : 'default'} variant="outlined" label={`${team}: ${count}`} />) : <Typography variant="caption" color="text.secondary">nessuno</Typography>}
       </Stack>
 

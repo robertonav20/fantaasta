@@ -11,11 +11,12 @@ export const theme = createTheme({
     error: { main: '#f85149' },
   },
   typography: {
-    fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    fontSize: 12,
-    h5: { fontSize: '1.2rem', fontWeight: 800 },
-    h6: { fontSize: '1rem', fontWeight: 800 },
-    button: { fontSize: '.72rem', fontWeight: 800 },
+    fontFamily: '"Titillium Web", sans-serif',
+    fontSize: 14,
+    fontStyle: 'normal',
+    h5: { fontSize: '1.2rem', fontWeight: 400 },
+    h6: { fontSize: '1rem', fontWeight: 400 },
+    button: { fontSize: '.72rem', fontWeight: 400 },
   },
   shape: { borderRadius: 8 },
   components: {
@@ -28,7 +29,7 @@ export const theme = createTheme({
     MuiTableCell: {
       styleOverrides: {
         root: { padding: '6px 8px', fontSize: '.72rem', whiteSpace: 'nowrap' },
-        head: { fontWeight: 800, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '.04em' },
+        head: { fontWeight: 400, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '.04em' },
       },
     },
     MuiInputBase: {

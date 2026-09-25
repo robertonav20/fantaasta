@@ -46,7 +46,7 @@ export default function HistoryModal({ open, onClose, history, activeAuction, on
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row">
           <Box><Typography variant="h6">Gestione rose</Typography><Typography variant="caption" color="text.secondary">Storico locale del browser · import/export JSON.</Typography></Box>
           <IconButton onClick={onClose}><CloseIcon /></IconButton>
         </Stack>
@@ -57,7 +57,7 @@ export default function HistoryModal({ open, onClose, history, activeAuction, on
           <TextField size="small" fullWidth label="Nome nuova rosa" value={name} onChange={(e) => setName(e.target.value)} placeholder={defaultRosterName()} />
           <Button startIcon={<SaveIcon />} variant="contained" onClick={() => { onSaveNew(name.trim() || defaultRosterName()); setName(''); }}>Salva corrente</Button>
         </Stack>
-        <Stack direction="row" gap={.5} flexWrap="wrap" sx={{ mb: 1 }}>
+        <Stack direction="row" gap={.5} sx={{ mb: 1 }}>
           <Button size="small" variant="outlined" startIcon={<FileDownloadIcon />} disabled={!selectedItems.length} onClick={() => exportItems(selectedItems)}>Esporta selezionate ({selectedItems.length})</Button>
           <Button size="small" variant="outlined" startIcon={<FileUploadIcon />} onClick={() => fileRef.current?.click()}>Importa JSON</Button>
           <input ref={fileRef} hidden type="file" accept="application/json,.json" multiple onChange={(e) => handleFiles(e.target.files)} />
@@ -78,7 +78,7 @@ export default function HistoryModal({ open, onClose, history, activeAuction, on
                 }>
                   <Checkbox checked={selected.has(item.id)} onChange={() => toggle(item.id)} />
                   <ListItemButton selected={active} onClick={() => onLoadCurrent(item)} sx={{ pr: 18 }}>
-                    <ListItemText primary={<Typography sx={{ fontWeight: 800 }}>{item.name}</Typography>} secondary={`${meta.players}/25 giocatori · ${meta.spent} cr · aggiornato ${formatDateTime(item.updatedAt || item.createdAt)}`} />
+                    <ListItemText primary={<Typography sx={{ fontWeight: 700 }}>{item.name}</Typography>} secondary={`${meta.players}/25 giocatori · ${meta.spent} cr · aggiornato ${formatDateTime(item.updatedAt || item.createdAt)}`} />
                   </ListItemButton>
                 </ListItem>
               );

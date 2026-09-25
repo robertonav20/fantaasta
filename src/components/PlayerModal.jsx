@@ -35,7 +35,7 @@ function InfoGrid({ data }) {
       {entries.map(([key, value]) => (
         <Paper key={key} variant="outlined" sx={{ p: 1, minWidth: 0 }}>
           <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase' }}>{LABELS[key] || key}</Typography>
-          <Typography sx={{ fontWeight: 750, wordBreak: 'break-word' }}>{display(key, value)}</Typography>
+          <Typography sx={{ fontWeight: 700, wordBreak: 'break-word' }}>{display(key, value)}</Typography>
         </Paper>
       ))}
     </Box>
@@ -45,8 +45,8 @@ function InfoGrid({ data }) {
 function Section({ title, subtitle, children }) {
   return (
     <Box sx={{ mt: 2 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-        <Typography variant="subtitle2" color="primary.main" sx={{ fontWeight: 900, textTransform: 'uppercase' }}>{title}</Typography>
+      <Stack direction="row" sx={{ mb: 1 }}>
+        <Typography variant="subtitle2" color="primary.main" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>{title}</Typography>
         {subtitle && <Typography variant="caption" color="text.secondary">{subtitle}</Typography>}
       </Stack>
       {children}
@@ -59,7 +59,7 @@ export default function PlayerModal({ player, open, onClose }) {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" scroll="paper">
       <DialogTitle sx={{ py: 1.25 }}>
-        <Stack direction="row" alignItems="center" spacing={1}>
+        <Stack direction="row" spacing={1}>
           <RoleBadge role={player.info?.R || player.role} />
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6">{player.name}</Typography>

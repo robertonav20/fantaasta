@@ -8,7 +8,7 @@ export default function AuctionTabs({ auctions, activeAuctionId, onSelect, onAdd
       <Tabs value={activeAuctionId} onChange={(_, value) => onSelect(value)} variant="scrollable" scrollButtons="auto" sx={{ flex: 1, minWidth: 0, minHeight: 36, '& .MuiTab-root': { minHeight: 36, py: .35, px: 1 } }}>
         {auctions.map((auction) => (
           <Tab key={auction.id} value={auction.id} label={
-            <Stack direction="row" alignItems="center" spacing={.25}>
+            <Stack direction="row" spacing={.25}>
               <span>{auction.name}</span>
               <Tooltip title="Chiudi asta"><IconButton component="span" size="small" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onClose(auction.id); }} sx={{ p: .15 }}><CloseIcon sx={{ fontSize: 14 }} /></IconButton></Tooltip>
             </Stack>

@@ -44,16 +44,14 @@ function RoleDetail({ role, data, labelA, labelB }) {
     <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        justifyContent="space-between"
         gap={1}
         sx={{ px: 1.35, py: 1.15, bgcolor: 'rgba(88,166,255,.06)' }}
       >
-        <Stack direction="row" spacing={.9} alignItems="center">
+        <Stack direction="row" spacing={.9}>
           <RoleBadge role={role} />
           <Typography fontWeight={900} sx={{ letterSpacing: '.02em' }}>{ROLE_NAMES[role]}</Typography>
         </Stack>
-        <Stack direction="row" spacing={.6} useFlexGap flexWrap="wrap" alignItems="center">
+        <Stack direction="row" spacing={.6} useFlexGap>
           <Chip size="small" color="success" variant="outlined" label={`Comuni: ${data.same}`} />
           <Chip size="small" color="primary" variant="outlined" label={`${labelA}: ${data.onlyA} diversi`} />
           <Chip size="small" color="warning" variant="outlined" label={`${labelB}: ${data.onlyB} diversi`} />
@@ -65,12 +63,12 @@ function RoleDetail({ role, data, labelA, labelB }) {
           <TableBody>
             {data.rows.map((row) => (
               <TableRow key={row.key} sx={{ bgcolor: rowTone(row.status) }}>
-                <TableCell sx={{ fontWeight: 800 }}>{row.name}</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>{row.name}</TableCell>
                 <TableCell>{row.team || '—'}</TableCell>
                 <TableCell>{statusChip(row.status, labelA, labelB)}</TableCell>
                 <TableCell align="right">{row.costA === null ? '—' : `${money(row.costA)}cr`}</TableCell>
                 <TableCell align="right">{row.costB === null ? '—' : `${money(row.costB)}cr`}</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 800, color: row.costDelta === null ? 'text.secondary' : deltaColor(row.costDelta) }}>{row.costDelta === null ? '—' : deltaText(row.costDelta)}</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700, color: row.costDelta === null ? 'text.secondary' : deltaColor(row.costDelta) }}>{row.costDelta === null ? '—' : deltaText(row.costDelta)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -108,7 +106,7 @@ export default function RosterCompareModal({ open, onClose, auctions, history, a
       <DialogTitle>Confronta rose</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={1.25}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={.75} alignItems={{ sm: 'center' }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={.75}>
             <TextField select size="small" label="Rosa A" value={sourceA} onChange={(event) => setSourceA(event.target.value)} fullWidth>
               {options.map((option) => <MenuItem key={option.id} value={option.id}>{option.name} · {option.kind}</MenuItem>)}
             </TextField>
@@ -123,11 +121,11 @@ export default function RosterCompareModal({ open, onClose, auctions, history, a
 
           {comparison && (
             <>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2,1fr)', md: 'repeat(4,1fr)' }, gap: .75 }}>
-                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Giocatori comuni</Typography><Typography fontWeight={900} fontSize="1.05rem" color="success.main">{comparison.totalSame}</Typography></Paper>
-                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Solo {itemA.name}</Typography><Typography fontWeight={900} fontSize="1.05rem" color="primary.main">{comparison.totalOnlyA}</Typography></Paper>
-                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Solo {itemB.name}</Typography><Typography fontWeight={900} fontSize="1.05rem" color="warning.main">{comparison.totalOnlyB}</Typography></Paper>
-                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Δ spesa B − A</Typography><Typography fontWeight={900} fontSize="1.05rem" color={deltaColor(comparison.totalSpentDelta)}>{deltaText(comparison.totalSpentDelta)}</Typography></Paper>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2,1fr)', md: 'repeat(4,1fr)' }, alignItems: 'center', gap: .75 }}>
+                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Giocatori comuni</Typography><Typography fontWeight={700} fontSize="1.05rem" color="success.main">{comparison.totalSame}</Typography></Paper>
+                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Solo {itemA.name}</Typography><Typography fontWeight={700} fontSize="1.05rem" color="primary.main">{comparison.totalOnlyA}</Typography></Paper>
+                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Solo {itemB.name}</Typography><Typography fontWeight={700} fontSize="1.05rem" color="warning.main">{comparison.totalOnlyB}</Typography></Paper>
+                <Paper variant="outlined" sx={{ p: .8, textAlign: 'center' }}><Typography variant="caption" color="text.secondary">Δ spesa B − A</Typography><Typography fontWeight={700} fontSize="1.05rem" color={deltaColor(comparison.totalSpentDelta)}>{deltaText(comparison.totalSpentDelta)}</Typography></Paper>
               </Box>
 
               <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
@@ -139,13 +137,13 @@ export default function RosterCompareModal({ open, onClose, auctions, history, a
                         const data = comparison.roles[role];
                         return (
                           <TableRow key={role}>
-                            <TableCell><Stack direction="row" spacing={.6} alignItems="center"><RoleBadge role={role} /><b>{ROLE_NAMES[role]}</b></Stack></TableCell>
-                            <TableCell align="center" sx={{ color: 'success.main', fontWeight: 800 }}>{data.same}</TableCell>
-                            <TableCell align="center" sx={{ color: 'primary.main', fontWeight: 800 }}>{data.onlyA}</TableCell>
-                            <TableCell align="center" sx={{ color: 'warning.main', fontWeight: 800 }}>{data.onlyB}</TableCell>
+                            <TableCell><Stack direction="row" style={{alignItems: 'center'}} spacing={.6}><RoleBadge role={role} /><b>{ROLE_NAMES[role]}</b></Stack></TableCell>
+                            <TableCell align="center" sx={{ color: 'success.main', fontWeight: 700 }}>{data.same}</TableCell>
+                            <TableCell align="center" sx={{ color: 'primary.main', fontWeight: 700 }}>{data.onlyA}</TableCell>
+                            <TableCell align="center" sx={{ color: 'warning.main', fontWeight: 700 }}>{data.onlyB}</TableCell>
                             <TableCell align="right">{money(data.spentA)}cr</TableCell>
                             <TableCell align="right">{money(data.spentB)}cr</TableCell>
-                            <TableCell align="right" sx={{ color: deltaColor(data.spentDelta), fontWeight: 800 }}>{deltaText(data.spentDelta)}</TableCell>
+                            <TableCell align="right" sx={{ color: deltaColor(data.spentDelta), fontWeight: 700 }}>{deltaText(data.spentDelta)}</TableCell>
                             <TableCell align="right">{money(data.remainingA)}cr</TableCell>
                             <TableCell align="right">{money(data.remainingB)}cr</TableCell>
                           </TableRow>

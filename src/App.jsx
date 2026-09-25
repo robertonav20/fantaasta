@@ -17,12 +17,10 @@ export default function App() {
   return (
     <Container maxWidth={false} sx={{ maxWidth: 1600, py: { xs: 1, sm: 1.5 }, px: { xs: 1, sm: 1.5 } }}>
       <Stack spacing={1.25}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', sm: 'center' }} gap={.5}>
-          <Box>
+        <Stack direction="column" gap={.5}>
             <Typography variant="h5">Fantacalcio</Typography>
-            <Typography variant="caption" color="text.secondary">{catalogApi.count} giocatori · dati {catalogApi.updatedAt}</Typography>
-          </Box>
-          <Typography variant="caption" color="text.secondary">{PROJECT_VERSION}</Typography>
+            <Typography variant="caption" color="text.secondary">{PROJECT_VERSION}</Typography>
+            <Typography variant="caption" color="text.secondary">{catalogApi.count} Giocatori · dati {catalogApi.updatedAt}</Typography>
         </Stack>
 
         {catalogApi.error && <Alert severity="warning">{catalogApi.error}</Alert>}

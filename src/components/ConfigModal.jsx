@@ -22,7 +22,7 @@ export default function ConfigModal({ open, state, onClose, onApply }) {
       <DialogTitle>Configura</DialogTitle>
       <DialogContent>
         <Stack spacing={1.25} sx={{ pt: .5 }}>
-          <TextField size="small" type="number" label="Budget totale" value={draft.totalBudget} onChange={(e) => setDraft((current) => ({ ...current, totalBudget: Number(e.target.value || 0) }))} inputProps={{ style: { textAlign: 'center' } }} />
+          <TextField size="small" type="number" label="Budget totale" value={draft.totalBudget} onChange={(e) => setDraft((current) => ({ ...current, totalBudget: Number(e.target.value || 0) }))} />
           <Paper variant="outlined" sx={{ p: 1, borderColor: invalid ? 'error.main' : 'success.main', color: invalid ? 'error.main' : 'success.main', textAlign: 'center' }}>
             {invalid ? `Budget reparti superiore di ${money(allocated - draft.totalBudget)} crediti` : `Budget assegnato ${money(allocated)} / ${money(draft.totalBudget)}`}
           </Paper>
@@ -32,9 +32,9 @@ export default function ConfigModal({ open, state, onClose, onApply }) {
               <TableBody>
                 {ROLE_ORDER.map((role) => (
                   <TableRow key={role}>
-                    <TableCell><Stack direction="row" alignItems="center" spacing={.5}><RoleBadge role={role} size={18} /><b>{ROLE_NAMES[role]}</b></Stack></TableCell>
-                    <TableCell><TextField size="small" type="number" value={draft.roleBudgets[role]} error={invalid} onChange={(e) => updateBudget(role, e.target.value)} sx={{ width: 90 }} inputProps={{ style: { textAlign: 'center' } }} /></TableCell>
-                    {TIERS.map((tier) => <TableCell key={tier} align="center"><TextField size="small" type="number" value={draft.costs[role][tier]} onChange={(e) => updateCost(role, tier, e.target.value)} sx={{ width: 78 }} inputProps={{ style: { textAlign: 'center' } }} /></TableCell>)}
+                    <TableCell><Stack direction="row" spacing={.5}><RoleBadge role={role} size={18} /><b>{ROLE_NAMES[role]}</b></Stack></TableCell>
+                    <TableCell><TextField size="small" type="number" value={draft.roleBudgets[role]} error={invalid} onChange={(e) => updateBudget(role, e.target.value)} sx={{ width: 90 }} /></TableCell>
+                    {TIERS.map((tier) => <TableCell key={tier} align="center"><TextField size="small" type="number" value={draft.costs[role][tier]} onChange={(e) => updateCost(role, tier, e.target.value)} sx={{ width: 78 }} /></TableCell>)}
                   </TableRow>
                 ))}
               </TableBody>
